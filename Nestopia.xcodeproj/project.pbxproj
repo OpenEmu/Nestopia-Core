@@ -992,6 +992,7 @@
 		8D5B49B6048680CD000E48DA /* Nestopia.oecoreplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Nestopia.oecoreplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		942597D2151470A40074E3A3 /* OpenEmuBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenEmuBase.framework; path = ../OpenEmu/build/Release/OpenEmuBase.framework; sourceTree = "<group>"; };
+		946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../OpenEmu/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = "<group>"; };
 		C6296AA00FCECA2C004F84C4 /* NESGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NESGameController.h; sourceTree = "<group>"; };
 		C6296AA10FCECA2C004F84C4 /* NESGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NESGameController.m; sourceTree = "<group>"; };
 		C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedPreference.xib; sourceTree = "<group>"; };
@@ -1061,6 +1062,7 @@
 				C6296AA00FCECA2C004F84C4 /* NESGameController.h */,
 				C6296AA10FCECA2C004F84C4 /* NESGameController.m */,
 				C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */,
+				946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";

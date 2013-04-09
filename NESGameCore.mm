@@ -40,12 +40,14 @@
 #include <NstApiRewinder.hpp>
 #include <NstApiRam.h>
 #include <NstApiMovie.hpp>
+#include <NstApiFds.hpp>
 #include <NstMachine.hpp>
 #include <iostream>
 #include <fstream>
 #include <map>
 #import <OpenGL/gl.h>
 #import "OENESSystemResponderClient.h"
+#import "OEFDSSystemResponderClient.h"
 
 #define SAMPLERATE 48000
 
@@ -57,6 +59,7 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 @synthesize romPath;
 
 UInt32 bufInPos, bufOutPos, bufUsed;
+char biosFilePath[2048];
 
 static bool NST_CALLBACK VideoLock(void *userData, Nes::Api::Video::Output& video)
 {
@@ -189,23 +192,28 @@ void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File& file)
             [theData writeToFile:filePath atomically:YES];
             break;
         }
-
-        case Nes::Api::User::File::SAVE_FDS : // for saving modified Famicom Disk System files
+        case Nes::Api::User::File::LOAD_FDS:
         {
-            /*
-             char fdsname[512];
-
-             sprintf(fdsname, "%s.fds", savename);
-
-             std::ofstream fdsFile( fdsname, std::ifstream::out|std::ifstream::binary );
-
-             if(fdsFile.is_open())
-             fdsFile.write( (const char*) &data.front(), data.size() );
-
-             break;
-             */
+            NSLog(@"Trying to load FDS");
+            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            std::ifstream in_tmp([filePath UTF8String], std::ifstream::in|std::ifstream::binary);
+            
+            if (!in_tmp.is_open())
+                return;
+            
+            file.SetPatchContent(in_tmp);
+            break;
         }
-
+        case Nes::Api::User::File::SAVE_FDS: // for saving modified Famicom Disk System files
+        {
+            NSLog(@"Trying to save FDS");
+            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            std::ofstream out_tmp([filePath UTF8String], std::ifstream::out|std::ifstream::binary);
+            
+            if (out_tmp.is_open())
+                file.GetPatchContent(Nes::Api::User::File::PATCH_UPS, out_tmp);
+            break;
+        }
         case Nes::Api::User::File::LOAD_TAPE : // for loading Famicom cassette tapes
             DLog(@"Loading tape");
             break;
@@ -357,6 +365,15 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
     Nes::Api::User::logCallback.Set(doLog, userData);
     Nes::Api::Machine::eventCallback.Set(doEvent, userData);
     Nes::Api::User::questionCallback.Set(doQuestion, userData);
+    
+    Nes::Api::Fds fds(*emu);
+    NSString *appSupportPath = [NSString pathWithComponents:@[
+                                [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject],
+                                @"OpenEmu", @"BIOS"]];
+    
+    strcpy(biosFilePath, [[appSupportPath stringByAppendingPathComponent:@"disksys.rom"] UTF8String]);
+    std::ifstream biosFile(biosFilePath, std::ios::in | std::ios::binary);
+    fds.SetBIOS(&biosFile);
 
     std::ifstream romFile([path cStringUsingEncoding:NSUTF8StringEncoding], std::ios::in | std::ios::binary);
     result = machine.Load(romFile, Nes::Api::Machine::FAVORED_NES_NTSC, Nes::Api::Machine::ASK_PROFILE);
@@ -379,7 +396,7 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
                 errorDescription = NSLocalizedString(@"Unsupported mapper.", @"Unsupported mapper.");
                 break;
             case Nes::RESULT_ERR_MISSING_BIOS :
-                errorDescription = NSLocalizedString(@"Can't find fdisksys.rom for FDS game.", @"Can't find fdisksys.rom for FDS game.");
+                errorDescription = NSLocalizedString(@"Can't find disksys.rom for FDS game.", @"Can't find disksys.rom for FDS game.");
                 break;
             default :
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
@@ -390,6 +407,9 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
         return NO;
     }
     machine.Power(true);
+    
+    if (machine.Is(Nes::Api::Machine::DISK))
+        fds.InsertDisk(0, 0);
 
     return YES;
 }
@@ -583,7 +603,8 @@ static int Heights[2] =
 - (void)stopEmulation
 {
     Nes::Api::Machine machine(*emu);
-    machine.Power(false);
+    //machine.Power(false);
+    machine.Unload(); // this allows FDS to save
 }
 
 # pragma mark -
@@ -607,6 +628,14 @@ static int Heights[2] =
     DLog(@"Resetting NES");
     Nes::Api::Machine machine(*emu);
     machine.Reset(true);
+    
+    // put the disk system back to disk 0 side 0
+    if (machine.Is(Nes::Api::Machine::DISK))
+    {
+        Nes::Api::Fds fds(*emu);
+        fds.EjectDisk();
+        fds.InsertDisk(0, 0);
+    }
 }
 
 - (void)dealloc
@@ -741,6 +770,43 @@ static int Heights[2] =
         Nes::Api::Cheats::GameGenieDecode(cCode, ggCode);
         cheater.SetCode(ggCode);
     }
+}
+
+- (void)didPushFDSChangeSideButton;
+{
+    Nes::Api::Fds fds(*emu);
+    //fds.ChangeSide();
+    //NSLog(@"didPushFDSChangeSideButton");
+	Nes::Result result;
+	if (fds.IsAnyDiskInserted() && fds.CanChangeDiskSide())
+		result = fds.ChangeSide();
+	else
+		result = fds.InsertDisk(0, 0);
+	NSLog(@"didPushFDSChangeSideButton: %d", result);
+}
+
+- (void)didReleaseFDSChangeSideButton;
+{
+    
+}
+
+- (void)didPushFDSChangeDiskButton;
+{
+    Nes::Api::Fds fds(*emu);
+    // if multi-disk game, eject and insert the other disk
+	if (fds.GetNumDisks() > 1)
+    {
+        int currdisk = fds.GetCurrentDisk();
+        fds.EjectDisk();
+        fds.InsertDisk(!currdisk, 0);
+        
+        NSLog(@"didPushFDSChangeDiskButton");
+    }
+}
+
+- (void)didReleaseFDSChangeDiskButton;
+{
+    
 }
 
 @end
