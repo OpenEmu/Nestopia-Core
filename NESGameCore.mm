@@ -332,9 +332,9 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
     Nes::Api::Machine machine(*emu);
 
     if(machine.GetMode() == Nes::Api::Machine::NTSC)
-        return (double)Nes::Api::Machine::CLK_NTSC_DOT / Nes::Api::Machine::CLK_NTSC_VSYNC; // 60.0988138974
+        return Nes::Api::Machine::CLK_NTSC_DOT / Nes::Api::Machine::CLK_NTSC_VSYNC; // 60.0988138974
     else
-        return (double)Nes::Api::Machine::CLK_PAL_DOT / Nes::Api::Machine::CLK_PAL_VSYNC; // 50.0069789082
+        return Nes::Api::Machine::CLK_PAL_DOT / Nes::Api::Machine::CLK_PAL_VSYNC; // 50.0069789082
 }
 
 - (BOOL)loadFileAtPath:(NSString *)path
