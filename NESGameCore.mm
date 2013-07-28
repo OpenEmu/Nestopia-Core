@@ -751,11 +751,6 @@ static int Heights[2] =
                                 : OEIntSizeMake(Widths[0], Heights[0]);
 }
 
-- (BOOL)canCheat
-{
-    return YES;
-}
-
 - (void)setCheat:(NSString *)code setType:(NSString *)type setEnabled:(BOOL)enabled
 {
     Nes::Api::Cheats cheater(*emu);
