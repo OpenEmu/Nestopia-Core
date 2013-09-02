@@ -605,6 +605,7 @@ static int Heights[2] =
     Nes::Api::Machine machine(*emu);
     //machine.Power(false);
     machine.Unload(); // this allows FDS to save
+    [super stopEmulation];
 }
 
 # pragma mark -
