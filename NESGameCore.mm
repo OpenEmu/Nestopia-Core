@@ -669,9 +669,9 @@ static int Heights[2] =
     return 1;
 }
 
-- (BOOL)saveStateToFileAtPath:(NSString *)fileName
+- (void)saveStateToFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
 {
-    const char* filename = [fileName UTF8String];
+    const char* filename = [fileName fileSystemRepresentation];
 
     Nes::Result result;
 
@@ -679,9 +679,16 @@ static int Heights[2] =
     std::ofstream stateFile(filename, std::ifstream::out|std::ifstream::binary);
 
     if(stateFile.is_open())
-        result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION );
+        result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
     else
-        return NO;
+    {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
+        }];
+        block(NO, error);
+        return;
+    }
 
     if(NES_FAILED(result))
     {
@@ -698,17 +705,21 @@ static int Heights[2] =
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
                 break;
         }
-        NSLog(@"%@",errorDescription);
 
-        return NO;
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription
+        }];
+
+        block(NO, error);
+        return;
     }
 
     stateFile.close();
-
-    return YES;
+    block(YES, nil);
 }
 
-- (BOOL)loadStateFromFileAtPath:(NSString *)fileName
+- (void)loadStateFromFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
 {
     Nes::Result result;
 
@@ -718,7 +729,14 @@ static int Heights[2] =
     if(stateFile.is_open())
         result = machine.LoadState(stateFile);
     else
-        return NO;
+    {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
+        }];
+        block(NO, error);
+        return;
+    }
 
     if(NES_FAILED(result))
     {
@@ -738,12 +756,16 @@ static int Heights[2] =
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
                 break;
         }
-        NSLog(@"%@", errorDescription);
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
+            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription,
+        }];
 
-        return NO;
+        block(NO, error);
+        return;
     }
 
-    return YES;
+    block(YES, nil);
 }
 
 - (OEIntSize)bufferSize
