@@ -26,6 +26,10 @@
 	<string>NESGameCore</string>
 	<key>OEGameCorePlayerCount</key>
 	<string>4</string>
+	<key>OEGameCoreRequiresFiles</key>
+	<true/>
+	<key>OEGameCoreSupportsCheatCode</key>
+	<true/>
 	<key>OEProjectURL</key>
 	<string>http://nestopia.sourceforge.net/</string>
 	<key>OESystemIdentifiers</key>
@@ -39,7 +43,5 @@
 	<string>http://openemu.org/updater/nestopia_appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
-	<key>OEGameCoreSupportsCheatCode</key>
-	<true/>
 </dict>
 </plist>
