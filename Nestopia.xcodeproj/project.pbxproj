@@ -324,8 +324,6 @@
 		82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82789B700E70D27D00C01C82 /* NESGameCore.mm */; };
 		82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */ = {isa = PBXBuildFile; fileRef = 82798BE50E85CC65001DCA93 /* OpenNestopia.icns */; };
 		82C5EDE70F0C4CE70019E2DC /* NstApiRam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82C5EDE60F0C4CE70019E2DC /* NstApiRam.cpp */; };
-		82C9CA720F0847310071460B /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 82C9CA710F0847310071460B /* dsa_pub.pem */; };
-		82CAFDD50FEDD8F100CCDC7E /* config.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 82CAFA890FED9C6B00CCDC7E /* config.yaml */; };
 		82F3642F0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
@@ -367,7 +365,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				82CAFDD50FEDD8F100CCDC7E /* config.yaml in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -985,8 +982,6 @@
 		82798BE50E85CC65001DCA93 /* OpenNestopia.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = OpenNestopia.icns; sourceTree = "<group>"; };
 		82C5EDE50F0C4CE70019E2DC /* NstApiRam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NstApiRam.h; sourceTree = "<group>"; };
 		82C5EDE60F0C4CE70019E2DC /* NstApiRam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiRam.cpp; sourceTree = "<group>"; };
-		82C9CA710F0847310071460B /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
-		82CAFA890FED9C6B00CCDC7E /* config.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.yaml; sourceTree = "<group>"; };
 		82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NESGameCore+NESFeatures.mm"; sourceTree = "<group>"; };
 		82F45ED70E887EAF00B7B023 /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Nestopia.oecoreplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Nestopia.oecoreplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1042,7 +1037,6 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				82C9CA710F0847310071460B /* dsa_pub.pem */,
 				82798BE50E85CC65001DCA93 /* OpenNestopia.icns */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
@@ -1097,7 +1091,6 @@
 		32C88E010371C26100C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				82CAFA890FED9C6B00CCDC7E /* config.yaml */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -1839,7 +1832,6 @@
 				82789B040E70D06700C01C82 /* readme.txt in Resources */,
 				82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */,
 				8249C9A60E89BA140027EFDF /* Menu.xib in Resources */,
-				82C9CA720F0847310071460B /* dsa_pub.pem in Resources */,
 				C6296C620FCEEE45004F84C4 /* AdvancedPreference.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
