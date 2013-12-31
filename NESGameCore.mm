@@ -649,12 +649,12 @@ static int Heights[2] =
     delete controls;
 }
 
-- (void)didPushNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
+- (oneway void)didPushNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
 {
     controls->pad[player - 1].buttons |=  NESControlValues[button];
 }
 
-- (void)didReleaseNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
+- (oneway void)didReleaseNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
 {
     controls->pad[player - 1].buttons &= ~NESControlValues[button];
 }
@@ -790,7 +790,7 @@ static int Heights[2] =
     }
 }
 
-- (void)didPushFDSChangeSideButton;
+- (oneway void)didPushFDSChangeSideButton;
 {
     Nes::Api::Fds fds(*emu);
     //fds.ChangeSide();
@@ -803,12 +803,12 @@ static int Heights[2] =
 	NSLog(@"didPushFDSChangeSideButton: %d", result);
 }
 
-- (void)didReleaseFDSChangeSideButton;
+- (oneway void)didReleaseFDSChangeSideButton;
 {
     
 }
 
-- (void)didPushFDSChangeDiskButton;
+- (oneway void)didPushFDSChangeDiskButton;
 {
     Nes::Api::Fds fds(*emu);
     // if multi-disk game, eject and insert the other disk
@@ -822,7 +822,7 @@ static int Heights[2] =
     }
 }
 
-- (void)didReleaseFDSChangeDiskButton;
+- (oneway void)didReleaseFDSChangeDiskButton;
 {
     
 }

@@ -36,7 +36,6 @@
 
 /* Begin PBXBuildFile section */
 		3D60316214DF7D0B00E9AF58 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D6030E914DF715100E9AF58 /* libz.dylib */; };
-		8249C9A60E89BA140027EFDF /* Menu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8249C9A50E89BA140027EFDF /* Menu.xib */; };
 		827899CA0E70CFD100C01C82 /* NstApiBarcodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8278976E0E70CFC900C01C82 /* NstApiBarcodeReader.cpp */; };
 		827899CB0E70CFD100C01C82 /* NstApiCartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827897700E70CFC900C01C82 /* NstApiCartridge.cpp */; };
 		827899CC0E70CFD100C01C82 /* NstApiCheats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827897720E70CFCA00C01C82 /* NstApiCheats.cpp */; };
@@ -324,11 +323,9 @@
 		82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82789B700E70D27D00C01C82 /* NESGameCore.mm */; };
 		82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */ = {isa = PBXBuildFile; fileRef = 82798BE50E85CC65001DCA93 /* OpenNestopia.icns */; };
 		82C5EDE70F0C4CE70019E2DC /* NstApiRam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82C5EDE60F0C4CE70019E2DC /* NstApiRam.cpp */; };
-		82F3642F0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
-		C6296AA20FCECA2C004F84C4 /* NESGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6296AA10FCECA2C004F84C4 /* NESGameController.m */; };
-		C6296C620FCEEE45004F84C4 /* AdvancedPreference.xib in Resources */ = {isa = PBXBuildFile; fileRef = C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */; };
+		94E1860A187354470030F854 /* NESGameCore+NESFeatures.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */; };
 		C6D120F91711313900E868A8 /* OpenEmuBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D120F81711313900E868A8 /* OpenEmuBase.framework */; };
 /* End PBXBuildFile section */
 
@@ -1831,8 +1828,6 @@
 				82789B030E70D06700C01C82 /* nes_ntsc.txt in Resources */,
 				82789B040E70D06700C01C82 /* readme.txt in Resources */,
 				82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */,
-				8249C9A60E89BA140027EFDF /* Menu.xib in Resources */,
-				C6296C620FCEEE45004F84C4 /* AdvancedPreference.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2150,9 +2145,8 @@
 				82789AE50E70CFD100C01C82 /* NstVsSystem.cpp in Sources */,
 				82789AE60E70CFD100C01C82 /* NstVsTkoBoxing.cpp in Sources */,
 				82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */,
+				94E1860A187354470030F854 /* NESGameCore+NESFeatures.mm in Sources */,
 				82C5EDE70F0C4CE70019E2DC /* NstApiRam.cpp in Sources */,
-				82F3642F0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm in Sources */,
-				C6296AA20FCECA2C004F84C4 /* NESGameController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
