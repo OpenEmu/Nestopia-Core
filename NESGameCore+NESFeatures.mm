@@ -37,7 +37,7 @@
 #include <NstApiUser.hpp>
 #include <NstApiCheats.hpp>
 #include <NstApiRewinder.hpp>
-#include <NstApiRam.h>
+//#include <NstApiRam.h>
 #include <NstApiMovie.hpp>
 #include <NstMachine.hpp>
 #include <iostream>
@@ -216,94 +216,94 @@ NSString *const NESUnlimitedSprites = @"NESUnlimitedSprites";
     return rewinder.IsSoundEnabled();
 }
 
-- (void)setRamBytes:(double)off value:(double)val
-{
-    Nes::Api::Ram ram(*emu);
-
-    int prgRomOffset = (off * 0x2000) + 0x8000;
-    int prgRomValue = (int) (val * 256);
-
-    ram.SetRAM(prgRomOffset, prgRomValue);
-}
-
-- (int)cartVRamSize
-{
-    // note: some cartridges had VRAM some, some did not.  If they didn't, they used the PPU's 2K of RAM alone.
-    Nes::Api::Cartridge cart(*emu);
-    const Nes::Api::Cartridge::Profile* profile = cart.GetProfile();
-    int vRamSize = profile->board.GetVram();
-
-    //    DLog(@"vRamSize is %U",vRamSize);
-    if(vRamSize == 0)    //in other words, if the cartridge has no VRAM, set the size to 2K
-        return vRamSize = 2048;
-    else
-        return vRamSize;
-}
-
-// incoming doubles are 0.0 - > 1.0 range. We un-normalize
-- (void)setNmtRamBytes:(double)off value:(double)val
-{
-    int nameTableSize = 960;    // each nametable (there are 4) is 1024bytes, but the last 64 bytes of each
-                                // nametable is an attribute table, which controls the palette of the preceding nametable's tiles.
-                                // note: depending on the cartridge's mirroring mode, there can be one, two or four nametables (functionally speaking), while the others are just mirrors (copies).
-
-    Nes::Api::Machine machine(*emu);
-
-    int numPages = 3;
-
-    int unnormalizedOffset = off * nameTableSize;            // subtract 64bytes to stay out of the attribute table
-    int unnormalizedVal = (int) (val * 256);                // Nametable values are addresses in the pattern tables, which are at $0000 and $1000 in the PPU's RAM and $1000bytes each.
-                                                            // Here's a really good, short explanation of all the tables: http://nesdev.parodius.com/NESTechFAQ.htm#namattpat
-
-    for(int i = 0; i < numPages; i++)
-    {
-        machine.PokeNmt((i * 0x400) + 0x2000 + unnormalizedOffset, unnormalizedVal); //note: 0x400 = 1024bytes
-    }
-}
-
-- (void)setNMTRamByTable:(NSNumber*)table array:(NSArray*)nmtValueArray
-{
-    Nes::Api::Machine machine(*emu);
-
-    int startOfNameTable = [table unsignedIntValue] * 0x400;
-
-    for (int i = 0; i < 960; i++)
-    {
-        machine.PokeNmt(i + startOfNameTable + 0x2000, [[nmtValueArray objectAtIndex:i] intValue]);
-    }
-}
-
-- (int)chrRomSize //TODO: OK, sometimes games have CHR ROM, sometimes CHR RAM, sometimes both (or none). maybe just cut the ROM and call it chrSize?  that's what GetChr() seems to be returning anyway.  or maybe we'd be better served just replacing this with sprite-only-gltiching methods.
-{
-    Nes::Api::Cartridge cart(*emu);
-    const Nes::Api::Cartridge::Profile* profile = cart.GetProfile();
-    int romSize = profile->board.GetChr();
-    //    DLog(@"called chrRomSize. result: %U", romSize);
-    return romSize;
-}
-
-// incoming doubles are 0.0 - > 1.0 range. We un-normalize
-- (void)setChrRamBytes:(double)off value:(double)val
-{
-    // FIXME: this method needs to be rethunk.  and i shall do the rethunking!  --dan
-
-    int pageSize = 2048;    // this should be 1024 (according to Josh), but it seems
-                            // using 2K makes glitches across all screens, whereas 1K
-                            // occasionally would leave entire screen widths unaltered...
-
-    Nes::Api::Ram ram(*emu);
-
-    int romSize = [self chrRomSize];    // should be 4096  --ORLY? :P TODO: prove it.
-    int numPages = romSize / pageSize;
-
-    int unnormalizedOffset = (int) (off * pageSize);
-    int unnormalizedVal = ((int) (val * pageSize)) % 64;    // this % may fix a crash in glitching chr ram when looking up a palette above max val.
-
-    for(int i = 0; i < numPages ; i++)
-    {
-        ram.SetCHR(0, unnormalizedOffset , unnormalizedVal);
-    }
-}
+//- (void)setRamBytes:(double)off value:(double)val
+//{
+//    Nes::Api::Ram ram(*emu);
+//
+//    int prgRomOffset = (off * 0x2000) + 0x8000;
+//    int prgRomValue = (int) (val * 256);
+//
+//    ram.SetRAM(prgRomOffset, prgRomValue);
+//}
+//
+//- (int)cartVRamSize
+//{
+//    // note: some cartridges had VRAM some, some did not.  If they didn't, they used the PPU's 2K of RAM alone.
+//    Nes::Api::Cartridge cart(*emu);
+//    const Nes::Api::Cartridge::Profile* profile = cart.GetProfile();
+//    int vRamSize = profile->board.GetVram();
+//
+//    //    DLog(@"vRamSize is %U",vRamSize);
+//    if(vRamSize == 0)    //in other words, if the cartridge has no VRAM, set the size to 2K
+//        return vRamSize = 2048;
+//    else
+//        return vRamSize;
+//}
+//
+//// incoming doubles are 0.0 - > 1.0 range. We un-normalize
+//- (void)setNmtRamBytes:(double)off value:(double)val
+//{
+//    int nameTableSize = 960;    // each nametable (there are 4) is 1024bytes, but the last 64 bytes of each
+//                                // nametable is an attribute table, which controls the palette of the preceding nametable's tiles.
+//                                // note: depending on the cartridge's mirroring mode, there can be one, two or four nametables (functionally speaking), while the others are just mirrors (copies).
+//
+//    Nes::Api::Machine machine(*emu);
+//
+//    int numPages = 3;
+//
+//    int unnormalizedOffset = off * nameTableSize;            // subtract 64bytes to stay out of the attribute table
+//    int unnormalizedVal = (int) (val * 256);                // Nametable values are addresses in the pattern tables, which are at $0000 and $1000 in the PPU's RAM and $1000bytes each.
+//                                                            // Here's a really good, short explanation of all the tables: http://nesdev.parodius.com/NESTechFAQ.htm#namattpat
+//
+//    for(int i = 0; i < numPages; i++)
+//    {
+//        machine.PokeNmt((i * 0x400) + 0x2000 + unnormalizedOffset, unnormalizedVal); //note: 0x400 = 1024bytes
+//    }
+//}
+//
+//- (void)setNMTRamByTable:(NSNumber*)table array:(NSArray*)nmtValueArray
+//{
+//    Nes::Api::Machine machine(*emu);
+//
+//    int startOfNameTable = [table unsignedIntValue] * 0x400;
+//
+//    for (int i = 0; i < 960; i++)
+//    {
+//        machine.PokeNmt(i + startOfNameTable + 0x2000, [[nmtValueArray objectAtIndex:i] intValue]);
+//    }
+//}
+//
+//- (int)chrRomSize //TODO: OK, sometimes games have CHR ROM, sometimes CHR RAM, sometimes both (or none). maybe just cut the ROM and call it chrSize?  that's what GetChr() seems to be returning anyway.  or maybe we'd be better served just replacing this with sprite-only-gltiching methods.
+//{
+//    Nes::Api::Cartridge cart(*emu);
+//    const Nes::Api::Cartridge::Profile* profile = cart.GetProfile();
+//    int romSize = profile->board.GetChr();
+//    //    DLog(@"called chrRomSize. result: %U", romSize);
+//    return romSize;
+//}
+//
+//// incoming doubles are 0.0 - > 1.0 range. We un-normalize
+//- (void)setChrRamBytes:(double)off value:(double)val
+//{
+//    // FIXME: this method needs to be rethunk.  and i shall do the rethunking!  --dan
+//
+//    int pageSize = 2048;    // this should be 1024 (according to Josh), but it seems
+//                            // using 2K makes glitches across all screens, whereas 1K
+//                            // occasionally would leave entire screen widths unaltered...
+//
+//    Nes::Api::Ram ram(*emu);
+//
+//    int romSize = [self chrRomSize];    // should be 4096  --ORLY? :P TODO: prove it.
+//    int numPages = romSize / pageSize;
+//
+//    int unnormalizedOffset = (int) (off * pageSize);
+//    int unnormalizedVal = ((int) (val * pageSize)) % 64;    // this % may fix a crash in glitching chr ram when looking up a palette above max val.
+//
+//    for(int i = 0; i < numPages ; i++)
+//    {
+//        ram.SetCHR(0, unnormalizedOffset , unnormalizedVal);
+//    }
+//}
 
 - (void)recordMovie:(NSString*) moviePath mode:(BOOL)append
 {

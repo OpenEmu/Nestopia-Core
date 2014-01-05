@@ -106,13 +106,13 @@ OE_EXPORTED_CLASS
 - (void)enableRewinderBackwardsSound:(BOOL)rewindSound;
 - (BOOL)isRewinderBackwardsSoundEnabled;
 
-- (int)cartVRamSize;
-- (int)chrRomSize;
+//- (int)cartVRamSize;
+//- (int)chrRomSize;
 //- (void)setRandomNmtRamByte;
 //- (void)setRandomChrRamByte;
 
-- (void) setNmtRamBytes:(double)off value:(double)val;
-- (void) setChrRamBytes:(double)off value:(double)val;
+//- (void) setNmtRamBytes:(double)off value:(double)val;
+//- (void) setChrRamBytes:(double)off value:(double)val;
 
 //movie methods
 - (void)recordMovie:(NSString *)moviePath mode:(BOOL)append;

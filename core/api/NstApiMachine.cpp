@@ -161,16 +161,6 @@ namespace Nes
 			}
 		}
 
-		void Machine::PokeNmt(uint address, uint data) throw()
-		{
-			emulator.ppu.GetNmtMem().Poke( address & 0xFFF, data );
-		}
-		
-		void Machine::PokeChr(uint address, uint data) throw()
-		{
-			emulator.ppu.GetChrMem().Poke( address & 0x4000, data );
-		}
-		
 		Result Machine::Reset(const bool hard) throw()
 		{
 			if (!Is(ON) || IsLocked())
@@ -243,7 +233,7 @@ namespace Nes
 			{
 				return result;
 			}
-			catch (std::bad_alloc&)
+			catch (const std::bad_alloc&)
 			{
 				return RESULT_ERR_OUT_OF_MEMORY;
 			}
@@ -267,7 +257,7 @@ namespace Nes
 			{
 				return result;
 			}
-			catch (std::bad_alloc&)
+			catch (const std::bad_alloc&)
 			{
 				return RESULT_ERR_OUT_OF_MEMORY;
 			}

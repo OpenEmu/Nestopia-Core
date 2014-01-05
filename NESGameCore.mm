@@ -38,7 +38,7 @@
 #include <NstApiUser.hpp>
 #include <NstApiCheats.hpp>
 #include <NstApiRewinder.hpp>
-#include <NstApiRam.h>
+//#include <NstApiRam.h>
 #include <NstApiMovie.hpp>
 #include <NstApiFds.hpp>
 #include <NstMachine.hpp>

@@ -150,7 +150,7 @@ namespace Nes
 			black          (GetBlack(palette))
 			{
 				FpuPrecision precision;
-#pragma unused (precision)
+
 				nes_ntsc_setup_t setup;
 
 				setup.hue = 0;
