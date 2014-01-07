@@ -60,6 +60,7 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 
 UInt32 bufInPos, bufOutPos, bufUsed;
 char biosFilePath[2048];
+int displayMode = 0;
 
 static bool NST_CALLBACK VideoLock(void *userData, Nes::Api::Video::Output& video)
 {
@@ -825,6 +826,41 @@ static int Heights[2] =
 - (oneway void)didReleaseFDSChangeDiskButton;
 {
     
+}
+
+- (void)changeDisplayMode
+{
+    Nes::Api::Video video(*emu);
+    
+	switch (displayMode)
+    {
+        case 0:
+            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+            video.SetDecoder(Nes::Api::Video::DECODER_CONSUMER);
+            displayMode++;
+            break;
+			
+        case 1:
+            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+            video.SetDecoder(Nes::Api::Video::DECODER_ALTERNATIVE);
+            displayMode++;
+            break;
+			
+        case 2:
+            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_RGB);
+            displayMode++;
+            break;
+            
+        case 3:
+            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+            video.SetDecoder(Nes::Api::Video::DECODER_CANONICAL);
+            displayMode = 0;
+            break;
+			
+        default:
+            return;
+            break;
+    }
 }
 
 @end
