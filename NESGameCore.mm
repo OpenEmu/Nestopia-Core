@@ -775,19 +775,44 @@ static int Heights[2] =
                                 : OEIntSizeMake(Widths[0], Heights[0]);
 }
 
+#pragma mark - Cheats
+
+NSMutableDictionary *cheatList = [[NSMutableDictionary alloc] init];
+
 - (void)setCheat:(NSString *)code setType:(NSString *)type setEnabled:(BOOL)enabled
 {
+    // Sanitize
+    code = [code stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    // Remove any spaces
+    code = [code stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
     Nes::Api::Cheats cheater(*emu);
     Nes::Api::Cheats::Code ggCode;
     
-    NSArray *multipleCodes = [[NSArray alloc] init];
-    multipleCodes = [code componentsSeparatedByString:@"+"];
+    if (enabled)
+        [cheatList setValue:@YES forKey:code];
+    else
+        [cheatList removeObjectForKey:code];
     
-    for (NSString *singleCode in multipleCodes) {
-        const char *cCode = [singleCode UTF8String];
-        
-        Nes::Api::Cheats::GameGenieDecode(cCode, ggCode);
-        cheater.SetCode(ggCode);
+    cheater.ClearCodes();
+    
+    NSArray *multipleCodes = [[NSArray alloc] init];
+    
+    // Apply enabled cheats found in dictionary
+    for (id key in cheatList)
+    {
+        if ([[cheatList valueForKey:key] isEqual:@YES])
+        {
+            // Handle multi-line cheats
+            multipleCodes = [key componentsSeparatedByString:@"+"];
+            for (NSString *singleCode in multipleCodes) {
+                const char *cCode = [singleCode UTF8String];
+                
+                Nes::Api::Cheats::GameGenieDecode(cCode, ggCode);
+                cheater.SetCode(ggCode);
+            }
+        }
     }
 }
 
