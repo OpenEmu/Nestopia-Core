@@ -24,12 +24,36 @@
 	<string>OEGameCoreController</string>
 	<key>OEGameCoreClass</key>
 	<string>NESGameCore</string>
+	<key>OEGameCoreOptions</key>
+	<dict>
+		<key>openemu.system.fds</key>
+		<dict>
+			<key>OEGameCoreRequiresFiles</key>
+			<true/>
+			<key>OEGameCoreSupportsCheatCode</key>
+			<true/>
+			<key>OERequiredFiles</key>
+			<array>
+				<dict>
+					<key>Description</key>
+					<string>Disk System BIOS</string>
+					<key>MD5</key>
+					<string>CA30B50F880EB660A320674ED365EF7A</string>
+					<key>Name</key>
+					<string>disksys.rom</string>
+					<key>Size</key>
+					<integer>8192</integer>
+				</dict>
+			</array>
+		</dict>
+		<key>openemu.system.nes</key>
+		<dict>
+			<key>OEGameCoreSupportsCheatCode</key>
+			<true/>
+		</dict>
+	</dict>
 	<key>OEGameCorePlayerCount</key>
 	<string>4</string>
-	<key>OEGameCoreRequiresFiles</key>
-	<true/>
-	<key>OEGameCoreSupportsCheatCode</key>
-	<true/>
 	<key>OEProjectURL</key>
 	<string>http://nestopia.sourceforge.net/</string>
 	<key>OESystemIdentifiers</key>
