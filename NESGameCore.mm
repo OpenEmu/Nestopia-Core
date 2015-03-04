@@ -671,6 +671,14 @@ static int Heights[2] =
     return 1;
 }
 
+- (OEIntSize)bufferSize
+{
+    return [self isNTSCEnabled] ? OEIntSizeMake(Widths[1], Heights[1] * 2)
+    : OEIntSizeMake(Widths[0], Heights[0]);
+}
+
+#pragma mark - Save state
+
 - (NSData *)serializeStateWithError:(NSError **)outError
 {
     NSError *error = nil;
@@ -781,10 +789,103 @@ static int Heights[2] =
     }
 }
 
-- (OEIntSize)bufferSize
+- (void)saveStateToFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
 {
-    return [self isNTSCEnabled] ? OEIntSizeMake(Widths[1], Heights[1] * 2)
-                                : OEIntSizeMake(Widths[0], Heights[0]);
+    const char* filename = [fileName fileSystemRepresentation];
+    
+    Nes::Result result;
+    
+    Nes::Api::Machine machine(*emu);
+    std::ofstream stateFile(filename, std::ifstream::out|std::ifstream::binary);
+    
+    if(stateFile.is_open())
+        result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
+    else
+    {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+                                                                                                                         NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
+                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
+                                                                                                                         }];
+        block(NO, error);
+        return;
+    }
+    
+    if(NES_FAILED(result))
+    {
+        NSString *errorDescription = nil;
+        switch(result)
+        {
+            case Nes::RESULT_ERR_NOT_READY :
+                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                break;
+            case Nes::RESULT_ERR_OUT_OF_MEMORY :
+                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                break;
+            default :
+                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                break;
+        }
+        
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+                                                                                                                         NSLocalizedDescriptionKey : @"The save state data could not be read",
+                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : errorDescription
+                                                                                                                         }];
+        
+        block(NO, error);
+        return;
+    }
+    
+    stateFile.close();
+    block(YES, nil);
+}
+
+- (void)loadStateFromFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
+{
+    Nes::Result result;
+    
+    Nes::Api::Machine machine(*emu);
+    std::ifstream stateFile( [fileName UTF8String], std::ifstream::in|std::ifstream::binary );
+    
+    if(stateFile.is_open())
+        result = machine.LoadState(stateFile);
+    else
+    {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
+                                                                                                                         NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
+                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
+                                                                                                                         }];
+        block(NO, error);
+        return;
+    }
+    
+    if(NES_FAILED(result))
+    {
+        NSString *errorDescription = nil;
+        switch(result)
+        {
+            case Nes::RESULT_ERR_NOT_READY :
+                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                break;
+            case Nes::RESULT_ERR_INVALID_CRC :
+                errorDescription = NSLocalizedString(@"Invalid CRC checksum.", @"Invalid CRC checksum.");
+                break;
+            case Nes::RESULT_ERR_OUT_OF_MEMORY :
+                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                break;
+            default :
+                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                break;
+        }
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
+                                                                                                                         NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : errorDescription,
+                                                                                                                         }];
+        
+        block(NO, error);
+        return;
+    }
+    
+    block(YES, nil);
 }
 
 #pragma mark - Cheats
