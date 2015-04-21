@@ -661,6 +661,41 @@ static int Heights[2] =
     controls->pad[player - 1].buttons &= ~NESControlValues[button];
 }
 
+- (oneway void)didTriggerGunAtPoint:(OEIntPoint)aPoint
+{
+    [self mouseMovedAtPoint:aPoint];
+
+    controls->paddle.button = 1;
+    controls->zapper.x = aPoint.x;
+    controls->zapper.y = aPoint.y;
+    controls->zapper.fire = 1;
+    controls->bandaiHyperShot.x = aPoint.x;
+    controls->bandaiHyperShot.y = aPoint.y;
+    controls->bandaiHyperShot.fire = 1;
+}
+
+- (oneway void)didReleaseTrigger
+{
+    controls->paddle.button = 0;
+    controls->zapper.fire = 0;
+    controls->bandaiHyperShot.fire = 0;
+}
+
+- (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
+{
+    controls->paddle.x = aPoint.x;
+}
+
+- (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
+{
+    controls->bandaiHyperShot.move = 1;
+}
+
+- (oneway void)rightMouseUp;
+{
+    controls->bandaiHyperShot.move = 0;
+}
+
 - (double)audioSampleRate
 {
     return SAMPLERATE;
