@@ -706,6 +706,11 @@ static int Heights[2] =
     return 1;
 }
 
+- (OEIntRect)screenRect
+{
+    return OEIntRectMake(0, 0, 256, 240);
+}
+
 - (OEIntSize)bufferSize
 {
     return [self isNTSCEnabled] ? OEIntSizeMake(Widths[1], Heights[1] * 2)
