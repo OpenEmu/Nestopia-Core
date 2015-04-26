@@ -666,10 +666,10 @@ static int Heights[2] =
     [self mouseMovedAtPoint:aPoint];
 
     controls->paddle.button = 1;
-    controls->zapper.x = aPoint.x;
+    controls->zapper.x = aPoint.x * 0.800000;
     controls->zapper.y = aPoint.y;
     controls->zapper.fire = 1;
-    controls->bandaiHyperShot.x = aPoint.x;
+    controls->bandaiHyperShot.x = aPoint.x * 0.800000;
     controls->bandaiHyperShot.y = aPoint.y;
     controls->bandaiHyperShot.fire = 1;
 }
@@ -683,7 +683,7 @@ static int Heights[2] =
 
 - (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
 {
-    controls->paddle.x = aPoint.x;
+    controls->paddle.x = aPoint.x * 0.800000;
 }
 
 - (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
