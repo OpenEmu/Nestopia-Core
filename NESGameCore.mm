@@ -583,6 +583,7 @@ static int Heights[2] =
     {
         DLog(@"Database loaded");
         Nes::Api::Input(*emu).AutoSelectControllers();
+        Nes::Api::Input(*emu).AutoSelectAdapter();
     }
     else
         Nes::Api::Input(*emu).ConnectController(0, Nes::Api::Input::PAD1);
