@@ -26913,4 +26913,36 @@
             </board>
         </cartridge>
     </game>
+    <game>
+        <peripherals>
+            <device type="fourplayer" />
+        </peripherals>
+        <cartridge system="NES-NTSC" dump="ok" crc="1394DED0" sha1="B1C6A700A9F3B73666018E46515D376F06B8E9C2">
+            <board type="NES-UNROM" mapper="2">
+                <prg size="64k" />
+            </board>
+        </cartridge>
+    </game>
+    <game>
+        <peripherals>
+            <device type="fourplayer" />
+        </peripherals>
+        <cartridge system="NES-NTSC" dump="ok" crc="90D2E9F0" sha1="2801AADD9D0308CF2C9069A2BB76242ECA5B1501">
+            <board type="NES-NROM-256" mapper="0">
+                <prg size="32k" />
+                <chr size="8k" />
+            </board>
+        </cartridge>
+    </game>
+    <game>
+        <peripherals>
+            <device type="fourplayer" />
+        </peripherals>
+        <cartridge system="NES-NTSC" dump="ok" crc="2DA5ECE0" sha1="F3554E45D3261157653643C23A378C0295A5F893">
+            <board type="NES-NROM-256" mapper="0">
+                <prg size="32k" />
+                <chr size="8k" />
+            </board>
+        </cartridge>
+    </game>
 </database>
