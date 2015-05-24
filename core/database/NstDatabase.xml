@@ -26945,4 +26945,28 @@
             </board>
         </cartridge>
     </game>
+    <game>
+        <peripherals>
+            <device type="fourplayer" />
+        </peripherals>
+        <cartridge system="Famicom" dump="unknown" crc="69977C9E" sha1="C43D5F049F4F7862E6DECCA7500C0C23E349AF9F">
+            <board mapper="0">
+                <prg size="32k" />
+                <chr size="8k" />
+                <pad h="0" v="1" />
+            </board>
+        </cartridge>
+    </game>
+    <game>
+        <peripherals>
+            <device type="fourplayer" />
+        </peripherals>
+        <cartridge system="Famicom" dump="ok" crc="4FF17864" sha1="5119F1D6B67C5E44D63BA1E7080A6FE17623415C">
+            <board type="NES-SLROM" mapper="1">
+                <prg size="128k" />
+                <chr size="128k" />
+                <chip type="MMC1B2" />
+            </board>
+        </cartridge>
+    </game>
 </database>
