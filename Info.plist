@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>OpenNestopia</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.openemu.${PRODUCT_NAME:identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -28,15 +28,15 @@
 	<dict>
 		<key>openemu.system.fds</key>
 		<dict>
+			<key>OEGameCoreRequiresFiles</key>
+			<true/>
 			<key>OEGameCoreRewindBufferSeconds</key>
 			<integer>3600</integer>
 			<key>OEGameCoreRewindInterval</key>
 			<integer>0</integer>
-			<key>OEGameCoreSupportsRewinding</key>
-			<true/>
-			<key>OEGameCoreRequiresFiles</key>
-			<true/>
 			<key>OEGameCoreSupportsCheatCode</key>
+			<true/>
+			<key>OEGameCoreSupportsRewinding</key>
 			<true/>
 			<key>OERequiredFiles</key>
 			<array>
@@ -58,9 +58,9 @@
 			<integer>3600</integer>
 			<key>OEGameCoreRewindInterval</key>
 			<integer>0</integer>
-			<key>OEGameCoreSupportsRewinding</key>
-			<true/>
 			<key>OEGameCoreSupportsCheatCode</key>
+			<true/>
+			<key>OEGameCoreSupportsRewinding</key>
 			<true/>
 		</dict>
 	</dict>
