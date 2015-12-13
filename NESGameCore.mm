@@ -727,7 +727,6 @@ static int Heights[2] =
 
 - (NSData *)serializeStateWithError:(NSError **)outError
 {
-    NSError *error = nil;
     Nes::Result result;
     Nes::Api::Machine machine(*emu);
     
@@ -735,11 +734,12 @@ static int Heights[2] =
     
     result = machine.SaveState(stateStream, Nes::Api::Machine::NO_COMPRESSION);
     
-    if(NES_FAILED(result))
-    {
+    if(NES_FAILED(result)) {
+        if (!outError)
+            return nil;
+
         NSString *errorDescription = nil;
-        switch(result)
-        {
+        switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
                 errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
                 break;
@@ -751,39 +751,25 @@ static int Heights[2] =
                 break;
         }
         
-        error = [NSError errorWithDomain:OEGameCoreErrorDomain
-                                    code:OEGameCoreCouldNotSaveStateError
-                                userInfo:@{
-                                           NSLocalizedDescriptionKey : @"The save state data could not be read",
-                                           NSLocalizedRecoverySuggestionErrorKey : errorDescription
-                                           }];
+        *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription
+        }];
         
+        return NO;
     }
-    
-    if(error)
-    {
-        if(outError)
-        {
-            *outError = error;
-        }
-        return nil;
-    }
-    else
-    {
-        stateStream.seekg(0, std::ios::end);
-        NSUInteger length = stateStream.tellg();
-        stateStream.seekg(0, std::ios::beg);
-        
-        char *bytes = (char *)malloc(length);
-        stateStream.read(bytes, length);
-        
-        return [NSData dataWithBytesNoCopy:bytes length:length];
-    }
+
+    stateStream.seekg(0, std::ios::end);
+    NSUInteger length = stateStream.tellg();
+    stateStream.seekg(0, std::ios::beg);
+
+    NSMutableData *data = [NSMutableData dataWithLength:length];
+    stateStream.read((char *)data.mutableBytes, length);
+    return data;
 }
 
 - (BOOL)deserializeState:(NSData *)state withError:(NSError **)outError
 {
-    NSError *error;
     Nes::Result result;
     Nes::Api::Machine machine(*emu);
     
@@ -795,11 +781,12 @@ static int Heights[2] =
     
     result = machine.LoadState(stateStream);
     
-    if(NES_FAILED(result))
-    {
+    if(NES_FAILED(result)) {
+        if (!outError)
+            return NO;
+
         NSString *errorDescription = nil;
-        switch(result)
-        {
+        switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
                 errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
                 break;
@@ -813,26 +800,15 @@ static int Heights[2] =
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
                 break;
         }
-        error = [NSError errorWithDomain:OEGameCoreErrorDomain
-                                    code:OEGameCoreStateHasWrongSizeError
-                                userInfo:@{
-                                           NSLocalizedDescriptionKey : @"Save state has wrong file size.",
-                                           NSLocalizedRecoverySuggestionErrorKey : errorDescription,
-                                           }];
+        *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
+            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription,
+        }];
+
+        return NO;
     }
     
-    if(error)
-    {
-        if(outError)
-        {
-            *outError = error;
-        }
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+    return YES;
 }
 
 - (void)saveStateToFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
@@ -846,18 +822,17 @@ static int Heights[2] =
     
     if(stateFile.is_open())
         result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
-    else
-    {
+    else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-                                                                                                                         NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
-                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
-                                                                                                                         }];
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
+        }];
+
         block(NO, error);
         return;
     }
     
-    if(NES_FAILED(result))
-    {
+    if(NES_FAILED(result))  {
         NSString *errorDescription = nil;
         switch(result)
         {
@@ -873,9 +848,9 @@ static int Heights[2] =
         }
         
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-                                                                                                                         NSLocalizedDescriptionKey : @"The save state data could not be read",
-                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : errorDescription
-                                                                                                                         }];
+            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription
+        }];
         
         block(NO, error);
         return;
@@ -894,21 +869,19 @@ static int Heights[2] =
     
     if(stateFile.is_open())
         result = machine.LoadState(stateFile);
-    else
-    {
+    else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
-                                                                                                                         NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
-                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
-                                                                                                                         }];
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
+        }];
+
         block(NO, error);
         return;
     }
     
-    if(NES_FAILED(result))
-    {
+    if(NES_FAILED(result)) {
         NSString *errorDescription = nil;
-        switch(result)
-        {
+        switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
                 errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
                 break;
@@ -923,9 +896,9 @@ static int Heights[2] =
                 break;
         }
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
-                                                                                                                         NSLocalizedDescriptionKey : @"Save state has wrong file size.",
-                                                                                                                         NSLocalizedRecoverySuggestionErrorKey : errorDescription,
-                                                                                                                         }];
+            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription,
+        }];
         
         block(NO, error);
         return;
