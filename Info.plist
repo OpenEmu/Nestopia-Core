@@ -31,7 +31,7 @@
 			<key>OEGameCoreRequiresFiles</key>
 			<true/>
 			<key>OEGameCoreRewindBufferSeconds</key>
-			<integer>3600</integer>
+			<integer>60</integer>
 			<key>OEGameCoreRewindInterval</key>
 			<integer>0</integer>
 			<key>OEGameCoreSupportsCheatCode</key>
@@ -55,7 +55,7 @@
 		<key>openemu.system.nes</key>
 		<dict>
 			<key>OEGameCoreRewindBufferSeconds</key>
-			<integer>3600</integer>
+			<integer>60</integer>
 			<key>OEGameCoreRewindInterval</key>
 			<integer>0</integer>
 			<key>OEGameCoreSupportsCheatCode</key>
