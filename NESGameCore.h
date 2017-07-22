@@ -57,7 +57,7 @@ OE_EXPORTED_CLASS
     int                   bufFrameSize;
     NSUInteger            width;
     NSUInteger            height;
-    const unsigned char  *videoBuffer;
+    const unsigned char  *indirectVideoBuffer;
 
     void                 *_emu;
 

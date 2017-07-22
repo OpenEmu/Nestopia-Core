@@ -1043,6 +1043,7 @@
 			);
 			name = Nestopia;
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;

@@ -283,16 +283,26 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
     }
 }
 
-- (const void *)videoBuffer
+- (const void *)getVideoBufferWithHint:(void *)hint
 {
-    return videoBuffer;
+    if (!hint)
+    {
+        if(!indirectVideoBuffer)
+        {
+            indirectVideoBuffer = new unsigned char[width * height * 4];
+        }
+        hint = (void *)indirectVideoBuffer;
+    }
+    nesVideo->pixels = hint;
+    nesVideo->pitch = width * 4;
+    return hint;
 }
 
 - (BOOL)lockVideo:(void *)_video
 {
     Nes::Api::Video::Output *video = (Nes::Api::Video::Output *)_video;
     [videoLock lock];
-    video->pixels = (void*)videoBuffer;
+    video->pixels = (void*)indirectVideoBuffer;
     video->pitch = width*4;
     return true;
 }
@@ -322,11 +332,6 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
 - (GLenum)pixelType
 {
     return GL_UNSIGNED_INT_8_8_8_8_REV;
-}
-
-- (GLenum)internalPixelFormat
-{
-    return GL_RGB8;
 }
 
 - (NSTimeInterval)frameInterval
@@ -487,11 +492,6 @@ static int Heights[2] =
     width =Widths[filter];
     height = Heights[filter];
     DLog(@"buffer dim width: %d, height: %d\n", width, height);
-    [videoLock lock];
-    if(videoBuffer)
-        delete[] videoBuffer;
-    videoBuffer = new unsigned char[width * height * 4];
-    [videoLock unlock];
 
     renderState->bits.count = 32;
     renderState->bits.mask.r = 0xFF0000;
@@ -554,9 +554,6 @@ static int Heights[2] =
     }
 
     DLog(@"Loaded video");
-
-    nesVideo->pixels = (void *)videoBuffer;
-    nesVideo->pitch = width * 4;
 }
 
 - (void)setupEmulation
@@ -645,7 +642,7 @@ static int Heights[2] =
 - (void)dealloc
 {
     delete[] soundBuffer;
-    delete[] videoBuffer;
+    delete[] indirectVideoBuffer;
     delete emu;
     delete nesSound;
     delete nesVideo;
