@@ -198,7 +198,7 @@ void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File& file)
         {
             NSLog(@"Trying to load FDS");
             filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            std::ifstream in_tmp([filePath UTF8String], std::ifstream::in|std::ifstream::binary);
+            std::ifstream in_tmp(filePath.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary);
             
             if (!in_tmp.is_open())
                 return;
@@ -210,7 +210,7 @@ void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File& file)
         {
             NSLog(@"Trying to save FDS");
             filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            std::ofstream out_tmp([filePath UTF8String], std::ifstream::out|std::ifstream::binary);
+            std::ofstream out_tmp(filePath.fileSystemRepresentation, std::ifstream::out|std::ifstream::binary);
             
             if (out_tmp.is_open())
                 file.GetPatchContent(Nes::Api::User::File::PATCH_UPS, out_tmp);
@@ -358,7 +358,7 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
         if(databasePath != nil)
         {
             DLog(@"Loading database");
-            std::ifstream databaseStream([databasePath cStringUsingEncoding:NSUTF8StringEncoding], std::ifstream::in | std::ifstream::binary);
+            std::ifstream databaseStream(databasePath.fileSystemRepresentation, std::ifstream::in | std::ifstream::binary);
             database.Load(databaseStream);
             database.Enable(true);
             databaseStream.close();
@@ -378,11 +378,11 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
                                 [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject],
                                 @"OpenEmu", @"BIOS"]];
     
-    strcpy(biosFilePath, [[appSupportPath stringByAppendingPathComponent:@"disksys.rom"] UTF8String]);
+    strcpy(biosFilePath, [[appSupportPath stringByAppendingPathComponent:@"disksys.rom"] fileSystemRepresentation]);
     std::ifstream biosFile(biosFilePath, std::ios::in | std::ios::binary);
     fds.SetBIOS(&biosFile);
 
-    std::ifstream romFile([path cStringUsingEncoding:NSUTF8StringEncoding], std::ios::in | std::ios::binary);
+    std::ifstream romFile(path.fileSystemRepresentation, std::ios::in | std::ios::binary);
     result = machine.Load(romFile, Nes::Api::Machine::FAVORED_NES_NTSC, Nes::Api::Machine::ASK_PROFILE);
 
     if(NES_FAILED(result))
@@ -569,7 +569,7 @@ static int Heights[2] =
         if(databasePath != nil)
         {
             DLog(@"Loading database");
-            std::ifstream databaseStream([databasePath cStringUsingEncoding:NSUTF8StringEncoding], std::ifstream::in | std::ifstream::binary);
+            std::ifstream databaseStream(databasePath.fileSystemRepresentation, std::ifstream::in | std::ifstream::binary);
             database.Load(databaseStream);
             database.Enable(true);
             databaseStream.close();
@@ -862,7 +862,7 @@ static int Heights[2] =
     Nes::Result result;
     
     Nes::Api::Machine machine(*emu);
-    std::ifstream stateFile( [fileName UTF8String], std::ifstream::in|std::ifstream::binary );
+    std::ifstream stateFile( fileName.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary );
     
     if(stateFile.is_open())
         result = machine.LoadState(stateFile);
