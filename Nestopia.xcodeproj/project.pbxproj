@@ -333,7 +333,6 @@
 		94CB655F18791A5400A19D7D /* NstBoardHenggedianzi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655918791A5400A19D7D /* NstBoardHenggedianzi.cpp */; };
 		94CB656018791A5400A19D7D /* NstBoardUnlA9746.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655B18791A5400A19D7D /* NstBoardUnlA9746.cpp */; };
 		94CB656118791A5400A19D7D /* NstBoardUnlN625092.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */; };
-		94E1860A187354470030F854 /* NESGameCore+NESFeatures.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */; };
 		C6D120F91711313900E868A8 /* OpenEmuBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D120F81711313900E868A8 /* OpenEmuBase.framework */; };
 /* End PBXBuildFile section */
 
@@ -1009,8 +1008,6 @@
 		94CB655C18791A5400A19D7D /* NstBoardUnlA9746.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlA9746.hpp; sourceTree = "<group>"; };
 		94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlN625092.cpp; sourceTree = "<group>"; };
 		94CB655E18791A5400A19D7D /* NstBoardUnlN625092.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlN625092.hpp; sourceTree = "<group>"; };
-		C6296AA00FCECA2C004F84C4 /* NESGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NESGameController.h; sourceTree = "<group>"; };
-		C6296AA10FCECA2C004F84C4 /* NESGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NESGameController.m; sourceTree = "<group>"; };
 		C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedPreference.xib; sourceTree = "<group>"; };
 		C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OENESSystemResponderClient.h; path = ../OpenEmu/NES/OENESSystemResponderClient.h; sourceTree = "<group>"; };
 		C6D120F81711313900E868A8 /* OpenEmuBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OpenEmuBase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1075,8 +1072,6 @@
 				82789B6F0E70D27D00C01C82 /* NESGameCore.h */,
 				82789B700E70D27D00C01C82 /* NESGameCore.mm */,
 				82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */,
-				C6296AA00FCECA2C004F84C4 /* NESGameController.h */,
-				C6296AA10FCECA2C004F84C4 /* NESGameController.m */,
 				C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */,
 				946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */,
 			);
@@ -2195,7 +2190,6 @@
 				82789AE50E70CFD100C01C82 /* NstVsSystem.cpp in Sources */,
 				82789AE60E70CFD100C01C82 /* NstVsTkoBoxing.cpp in Sources */,
 				82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */,
-				94E1860A187354470030F854 /* NESGameCore+NESFeatures.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

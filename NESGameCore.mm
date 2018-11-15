@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009, OpenEmu Team
+ Copyright (c) 2018, OpenEmu Team
 
 
  Redistribution and use in source and binary forms, with or without
@@ -26,362 +26,115 @@
  */
 
 #import "NESGameCore.h"
-#import "NESGameController.h"
 #import <OpenEmuBase/OERingBuffer.h>
-#include <sys/time.h>
+#import "OENESSystemResponderClient.h"
+#import "OEFDSSystemResponderClient.h"
+#import <OpenGL/gl.h>
+
 #include <NstBase.hpp>
 #include <NstApiEmulator.hpp>
 #include <NstApiMachine.hpp>
 #include <NstApiCartridge.hpp>
+#include <NstApiInput.hpp>
 #include <NstApiVideo.hpp>
 #include <NstApiSound.hpp>
 #include <NstApiUser.hpp>
 #include <NstApiCheats.hpp>
-#include <NstApiRewinder.hpp>
-//#include <NstApiRam.h>
-#include <NstApiMovie.hpp>
 #include <NstApiFds.hpp>
 #include <NstMachine.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <map>
-#import <OpenGL/gl.h>
-#import "OENESSystemResponderClient.h"
-#import "OEFDSSystemResponderClient.h"
 
 #define SAMPLERATE 48000
 
-NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Api::Input::Controllers::Pad::DOWN, Nes::Api::Input::Controllers::Pad::LEFT, Nes::Api::Input::Controllers::Pad::RIGHT, Nes::Api::Input::Controllers::Pad::A, Nes::Api::Input::Controllers::Pad::B, Nes::Api::Input::Controllers::Pad::START, Nes::Api::Input::Controllers::Pad::SELECT
-};
+@interface NESGameCore () <OENESSystemResponderClient, OEFDSSystemResponderClient>
+{
+    NSURL               *_romURL;
+    int                  _bufFrameSize;
+    NSUInteger           _width;
+    NSUInteger           _height;
+    const unsigned char *_indirectVideoBuffer;
+    int16_t             *_soundBuffer;
+
+    Nes::Api::Emulator       _emu;
+    Nes::Api::Sound::Output *_nesSound;
+    Nes::Api::Video::Output *_nesVideo;
+    Nes::Api::Input::Controllers *_controls;
+
+    NSMutableDictionary<NSString *, NSNumber *> *_cheatList;
+}
+
+@end
 
 @implementation NESGameCore
 
-@synthesize romPath;
-
-UInt32 bufInPos, bufOutPos, bufUsed;
-char biosFilePath[2048];
+static __weak NESGameCore *_current;
 int displayMode = 0;
-
-static bool NST_CALLBACK VideoLock(void *userData, Nes::Api::Video::Output& video)
-{
-    DLog(@"Locking: %@", userData);
-    return [(__bridge NESGameCore *)userData lockVideo:&video];
-}
-
-static void NST_CALLBACK VideoUnlock(void *userData, Nes::Api::Video::Output& video)
-{
-    [(__bridge NESGameCore *)userData unlockVideo:&video];
-}
-
-static bool NST_CALLBACK SoundLock(void *userData, Nes::Api::Sound::Output& sound)
-{
-    return [(__bridge NESGameCore *)userData lockSound];
-}
-
-static void NST_CALLBACK SoundUnlock(void *userData, Nes::Api::Sound::Output& sound)
-{
-    [(__bridge NESGameCore *)userData unlockSound];
-}
 
 - (id)init;
 {
     if((self = [super init]))
     {
-        _nesSound = new Nes::Api::Sound::Output();
-        _nesVideo = new Nes::Api::Video::Output();
-        _controls = new Nes::Api::Input::Controllers();
-        _emu = new Nes::Api::Emulator();
-        soundLock = [[NSLock alloc] init];
-        videoLock = [[NSLock alloc] init];
+        _current = self;
+        _nesSound = new Nes::Api::Sound::Output;
+        _nesVideo = new Nes::Api::Video::Output;
+        _controls = new Nes::Api::Input::Controllers;
+        _cheatList = [NSMutableDictionary dictionary];
     }
+
     return self;
 }
 
-// for various file operations, usually called during image file load, power on/off and reset
-void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File& file)
+- (void)dealloc
 {
-    NESGameCore *self = (__bridge NESGameCore *)userData;
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *path = self->romPath;
-
-    NSString *extensionlessFilename = [[path lastPathComponent] stringByDeletingPathExtension];
-    NSString *batterySavesDirectory = [self batterySavesDirectoryPath];
-    [[NSFileManager defaultManager] createDirectoryAtPath:batterySavesDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
-
-    NSData *theData;
-    NSString *filePath;
-
-    DLog(@"Doing file IO");
-    switch(file.GetAction())
-    {
-        case Nes::Api::User::File::LOAD_SAMPLE :
-        {
-            /*
-             XADArchive* romArchive = (XADArchive*)userData;
-             const wchar_t* romInZip = file.GetName();
-             NSString *romName =
-             (NSString *) CFStringCreateWithBytes(kCFAllocatorDefault,
-             (const UInt8 *) romInZip,
-             wcslen(romInZip) * sizeof(wchar_t),
-             kCFStringEncodingUTF32LE, false);
-             DLog(romName);
-             int fileIndex = -1;
-             for(int i = 0; i < [romArchive numberOfEntries]; i++)
-             {
-             if([[romArchive nameOfEntry:i] isEqualToString:romName] )
-             {
-             fileIndex = i;
-             break;
-             }
-             }
-             theData = [romArchive contentsOfEntry:fileIndex];
-             file.SetSampleContent([theData bytes] , [theData length], false, 32, 44100);
-             */
-            break;
-        }
-        case Nes::Api::User::File::LOAD_ROM :
-        {
-            /*
-             XADArchive* romArchive = (XADArchive*)userData;
-             const wchar_t* romInZip = file.GetName();
-             NSString *romName =
-             (NSString *) CFStringCreateWithBytes(kCFAllocatorDefault,
-             (const UInt8 *) romInZip,
-             wcslen(romInZip) * sizeof(wchar_t),
-             kCFStringEncodingUTF32LE, false);
-             DLog(romName);
-             int fileIndex = -1;
-             for(int i = 0; i < [romArchive numberOfEntries]; i++)
-             {
-             if([[romArchive nameOfEntry:i] isEqualToString:romName] )
-             {
-             fileIndex = i;
-             break;
-             }
-             }
-             theData = [romArchive contentsOfEntry:fileIndex];
-             file.SetContent([theData bytes] , [theData length]);
-             */
-            break;
-        }
-
-        case Nes::Api::User::File::LOAD_BATTERY : // load in battery data from a file
-        case Nes::Api::User::File::LOAD_EEPROM : // used by some Bandai games, can be treated the same as battery files
-        {
-            NSLog(@"Trying to load EEPROM");
-            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            NSLog(@"File path: %@", filePath);
-            if(![fileManager fileExistsAtPath:filePath])
-            {
-                NSLog(@"Couldn't find save");
-                return;
-            }
-            theData = [NSData dataWithContentsOfFile:filePath];
-            file.SetContent([theData bytes], [theData length]);
-            break;
-        }
-        case Nes::Api::User::File::SAVE_BATTERY : // save battery data to a file
-        case Nes::Api::User::File::SAVE_EEPROM : // can be treated the same as battery files
-        {
-            NSLog(@"Trying to save EEPROM");
-            const void *savedata;
-            unsigned long savedatasize;
-            file.GetContent( savedata, savedatasize );
-            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            theData = [NSData dataWithBytes:savedata length:savedatasize];
-            [theData writeToFile:filePath atomically:YES];
-            break;
-        }
-        case Nes::Api::User::File::LOAD_FDS:
-        {
-            NSLog(@"Trying to load FDS");
-            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            std::ifstream in_tmp(filePath.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary);
-            
-            if (!in_tmp.is_open())
-                return;
-            
-            file.SetPatchContent(in_tmp);
-            break;
-        }
-        case Nes::Api::User::File::SAVE_FDS: // for saving modified Famicom Disk System files
-        {
-            NSLog(@"Trying to save FDS");
-            filePath = [batterySavesDirectory stringByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
-            std::ofstream out_tmp(filePath.fileSystemRepresentation, std::ifstream::out|std::ifstream::binary);
-            
-            if (out_tmp.is_open())
-                file.GetPatchContent(Nes::Api::User::File::PATCH_UPS, out_tmp);
-            break;
-        }
-        case Nes::Api::User::File::LOAD_TAPE : // for loading Famicom cassette tapes
-            DLog(@"Loading tape");
-            break;
-        case Nes::Api::User::File::SAVE_TAPE : // for saving Famicom cassette tapes
-        case Nes::Api::User::File::LOAD_TURBOFILE : // for loading turbofile data
-        case Nes::Api::User::File::SAVE_TURBOFILE : // for saving turbofile data
-            break;
-        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_YAKYUU :
-
-            DLog(@"Asked for sample Moreo");
-            break;
-        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_YAKYUU_88 :
-            DLog(@"Asked for sample Moreo 88");
-            break;
-        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_TENNIS :
-            DLog(@"Asked for sample Moreo Tennis");
-            break;
-        case Nes::Api::User::File::LOAD_SAMPLE_TERAO_NO_DOSUKOI_OOZUMOU :
-        case Nes::Api::User::File::LOAD_SAMPLE_AEROBICS_STUDIO :
-            break;
-    }
+    delete[] _soundBuffer;
+    delete[] _indirectVideoBuffer;
+    delete _nesSound;
+    delete _nesVideo;
+    delete _controls;
 }
 
-
-Nes::Api::User::Answer NST_CALLBACK doQuestion(void *userData, Nes::Api::User::Question question)
-{
-    switch(question)
-    {
-        case Nes::Api::User::QUESTION_NST_PRG_CRC_FAIL_CONTINUE :
-            break;
-        case Nes::Api::User::QUESTION_NSV_PRG_CRC_FAIL_CONTINUE :
-            break;
-    }
-
-    NSLog(@"CRC Failed");
-    return Nes::Api::User::ANSWER_DEFAULT;
-}
-
-void NST_CALLBACK doLog(void *userData, const char *text,unsigned long length)
-{
-    NSLog(@"%@",[NSString stringWithUTF8String:text]);
-}
-
-void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::Result result)
-{
-    switch(event)
-    {
-        case Nes::Api::Machine::EVENT_LOAD :
-            NSLog(@"Load returned : %d", result);
-            break;
-        case Nes::Api::Machine::EVENT_UNLOAD :
-            NSLog(@"Unload returned : %d", result);
-            break;
-        case Nes::Api::Machine::EVENT_POWER_ON :
-            NSLog(@"Power on returned : %d", result);
-            break;
-        case Nes::Api::Machine::EVENT_POWER_OFF :
-            NSLog(@"Power off returned : %d", result);
-            break;
-        case Nes::Api::Machine::EVENT_RESET_SOFT :
-        case Nes::Api::Machine::EVENT_RESET_HARD :
-        case Nes::Api::Machine::EVENT_MODE_NTSC :
-        case Nes::Api::Machine::EVENT_MODE_PAL :
-            break;
-    }
-}
-
-- (const void *)getVideoBufferWithHint:(void *)hint
-{
-    if (!hint)
-    {
-        if(!indirectVideoBuffer)
-        {
-            indirectVideoBuffer = new unsigned char[width * height * 4];
-        }
-        hint = (void *)indirectVideoBuffer;
-    }
-    nesVideo->pixels = hint;
-    nesVideo->pitch = width * 4;
-    return hint;
-}
-
-- (BOOL)lockVideo:(void *)_video
-{
-    Nes::Api::Video::Output *video = (Nes::Api::Video::Output *)_video;
-    [videoLock lock];
-    video->pixels = (void*)indirectVideoBuffer;
-    video->pitch = width*4;
-    return true;
-}
-
-- (void)unlockVideo:(void *)_video
-{
-    Nes::Api::Video::Output *video = (Nes::Api::Video::Output *)_video;
-    [videoLock unlock];
-    video->pitch = NULL;
-}
-
-- (BOOL)lockSound
-{
-    return [soundLock tryLock];
-}
-
-- (void)unlockSound
-{
-    [soundLock unlock];
-}
-
-- (GLenum)pixelFormat
-{
-    return GL_BGRA;
-}
-
-- (GLenum)pixelType
-{
-    return GL_UNSIGNED_INT_8_8_8_8_REV;
-}
-
-- (NSTimeInterval)frameInterval
-{
-    Nes::Api::Machine machine(*emu);
-
-    if(machine.GetMode() == Nes::Api::Machine::NTSC)
-        return Nes::Api::Machine::CLK_NTSC_DOT / Nes::Api::Machine::CLK_NTSC_VSYNC; // 60.0988138974
-    else
-        return Nes::Api::Machine::CLK_PAL_DOT / Nes::Api::Machine::CLK_PAL_VSYNC; // 50.0069789082
-}
+# pragma mark - Execution
 
 - (BOOL)loadFileAtPath:(NSString *)path error:(NSError **)error
 {
     Nes::Result result;
+    Nes::Api::Machine machine(_emu);
+    Nes::Api::Cartridge::Database database(_emu);
 
-    Nes::Api::Machine machine(*emu);
-
-    Nes::Api::Cartridge::Database database(*emu);
-
+    // Load database
     if(!database.IsLoaded())
     {
-        NSString *databasePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"NstDatabase" ofType:@"xml"];
-        if(databasePath != nil)
+        NSLog(@"[Nestopia] loading db");
+        NSURL *databaseURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"NstDatabase" withExtension:@"xml"];
+        if ([databaseURL checkResourceIsReachableAndReturnError:nil])
         {
-            DLog(@"Loading database");
-            std::ifstream databaseStream(databasePath.fileSystemRepresentation, std::ifstream::in | std::ifstream::binary);
+            std::ifstream databaseStream(databaseURL.fileSystemRepresentation, std::ifstream::in | std::ifstream::binary);
             database.Load(databaseStream);
             database.Enable(true);
             databaseStream.close();
         }
     }
 
-    [self setRomPath:path];
+    _romURL = [NSURL fileURLWithPath:path];
 
-    void *userData = (__bridge void *)self;
-    Nes::Api::User::fileIoCallback.Set(doFileIO, userData);
-    Nes::Api::User::logCallback.Set(doLog, userData);
-    Nes::Api::Machine::eventCallback.Set(doEvent, userData);
-    Nes::Api::User::questionCallback.Set(doQuestion, userData);
-    
-    Nes::Api::Fds fds(*emu);
-    NSString *appSupportPath = [NSString pathWithComponents:@[
-                                [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject],
-                                @"OpenEmu", @"BIOS"]];
-    
-    strcpy(biosFilePath, [[appSupportPath stringByAppendingPathComponent:@"disksys.rom"] fileSystemRepresentation]);
-    std::ifstream biosFile(biosFilePath, std::ios::in | std::ios::binary);
-    fds.SetBIOS(&biosFile);
+    // Setup callbacks
+    Nes::Api::User::fileIoCallback.Set(doFileIO, 0);
+    Nes::Api::User::logCallback.Set(doLog, 0);
+    Nes::Api::Machine::eventCallback.Set(doEvent, 0);
+    Nes::Api::User::questionCallback.Set(doQuestion, 0);
 
+    // Load FDS BIOS
+    Nes::Api::Fds fds(_emu);
+    if([self.systemIdentifier isEqualToString:@"openemu.system.fds"])
+    {
+        NSString *biosFilePath = [self.biosDirectoryPath stringByAppendingPathComponent:@"disksys.rom"];
+        std::ifstream biosFile(biosFilePath.fileSystemRepresentation, std::ios::in | std::ios::binary);
+        fds.SetBIOS(&biosFile);
+    }
+
+    // Load ROM
     std::ifstream romFile(path.fileSystemRepresentation, std::ios::in | std::ios::binary);
     result = machine.Load(romFile, Nes::Api::Machine::FAVORED_NES_NTSC, Nes::Api::Machine::ASK_PROFILE);
 
@@ -409,7 +162,14 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
                 break;
         }
-        NSLog(@"%@",errorDescription);
+
+        NSError *outErr = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadROMError userInfo:@{
+                //NSLocalizedDescriptionKey : @"Could not load ROM.",
+                NSLocalizedDescriptionKey : errorDescription,
+                //NSLocalizedRecoverySuggestionErrorKey : errorDescription
+                }];
+
+            *error = outErr;
 
         return NO;
     }
@@ -421,278 +181,148 @@ void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::R
     return YES;
 }
 
-
-- (void)setupAudio:(Nes::Api::Emulator*)emulator
-{
-    Nes::Api::Sound sound( *emulator );
-    //Nes::Api::Machine machine( *emulator );
-    sound.SetSampleBits( 16 );
-    sound.SetSampleRate( SAMPLERATE );
-    sound.SetVolume(Nes::Api::Sound::ALL_CHANNELS, 100);
-    sound.SetSpeaker( Nes::Api::Sound::SPEAKER_MONO );
-    sound.SetSpeed( [self frameInterval] );
-
-    bufFrameSize = (SAMPLERATE / [self frameInterval]);
-
-    soundBuffer = new UInt16[bufFrameSize * [self channelCount]];
-    [[self ringBufferAtIndex:0] setLength:(sizeof(UInt16) * bufFrameSize * [self channelCount] * 5)];
-
-    memset(soundBuffer, 0, bufFrameSize * [self channelCount] * sizeof(UInt16));
-    nesSound->samples[0] = soundBuffer;
-    nesSound->length[0] = bufFrameSize;
-    nesSound->samples[1] = NULL;
-    nesSound->length[1] = 0;
-}
-
-static Nes::Api::Video::RenderState::Filter filters[2] =
-{
-    Nes::Api::Video::RenderState::FILTER_NONE,
-    Nes::Api::Video::RenderState::FILTER_NTSC,
-    //Nes::Api::Video::RenderState::FILTER_SCALE2X,
-    //Nes::Api::Video::RenderState::FILTER_SCALE3X,
-    //Nes::Api::Video::RenderState::FILTER_HQ2X,
-    //Nes::Api::Video::RenderState::FILTER_HQ3X,
-    //Nes::Api::Video::RenderState::FILTER_HQ4X
-};
-
-static int Widths[2] =
-{
-    Nes::Api::Video::Output::WIDTH,
-    Nes::Api::Video::Output::NTSC_WIDTH,
-    //Nes::Api::Video::Output::WIDTH*2,
-    //Nes::Api::Video::Output::WIDTH*3,
-    //Nes::Api::Video::Output::WIDTH*2,
-    //Nes::Api::Video::Output::WIDTH*3,
-    //Nes::Api::Video::Output::WIDTH*4,
-};
-
-static int Heights[2] =
-{
-    Nes::Api::Video::Output::HEIGHT,
-    Nes::Api::Video::Output::HEIGHT,
-    //Nes::Api::Video::Output::HEIGHT*2,
-    //Nes::Api::Video::Output::HEIGHT*3,
-    //Nes::Api::Video::Output::HEIGHT*2,
-    //Nes::Api::Video::Output::HEIGHT*3,
-    //Nes::Api::Video::Output::HEIGHT*4,
-};
-
-- (void)setupVideo:(void *)_emulator withFilter:(int)filter
-{
-    Nes::Api::Emulator *emulator = (Nes::Api::Emulator *)_emulator;
-    // renderstate structure
-    Nes::Api::Video::RenderState *renderState = new Nes::Api::Video::RenderState();
-
-    Nes::Api::Machine machine(*emulator);
-    Nes::Api::Cartridge::Database database(*emulator);
-
-
-    //machine.SetMode(Nes::Api::Machine::NTSC);
-
-    width =Widths[filter];
-    height = Heights[filter];
-    DLog(@"buffer dim width: %d, height: %d\n", width, height);
-
-    renderState->bits.count = 32;
-    renderState->bits.mask.r = 0xFF0000;
-    renderState->bits.mask.g = 0x00FF00;
-    renderState->bits.mask.b = 0x0000FF;
-
-    renderState->filter = filters[filter];
-    renderState->width = Widths[filter];
-    renderState->height = Heights[filter];
-
-    Nes::Api::Video video(*emulator);
-
-    [self toggleUnlimitedSprites:nil];
-
-    // set up the NTSC type
-    /*
-     switch (0)
-     {
-
-     case 0:    // composite
-     video.SetSharpness(Nes::Api::Video::DEFAULT_SHARPNESS_COMP);
-     video.SetColorResolution(Nes::Api::Video::DEFAULT_COLOR_RESOLUTION_COMP);
-     video.SetColorBleed(Nes::Api::Video::DEFAULT_COLOR_BLEED_COMP);
-     video.SetColorArtifacts(Nes::Api::Video::DEFAULT_COLOR_ARTIFACTS_COMP);
-     video.SetColorFringing(Nes::Api::Video::DEFAULT_COLOR_FRINGING_COMP);
-     break;
-
-     case 1:    // S-Video
-     video.SetSharpness(Nes::Api::Video::DEFAULT_SHARPNESS_SVIDEO);
-     video.SetColorResolution(Nes::Api::Video::DEFAULT_COLOR_RESOLUTION_SVIDEO);
-     video.SetColorBleed(Nes::Api::Video::DEFAULT_COLOR_BLEED_SVIDEO);
-     video.SetColorArtifacts(Nes::Api::Video::DEFAULT_COLOR_ARTIFACTS_SVIDEO);
-     video.SetColorFringing(Nes::Api::Video::DEFAULT_COLOR_FRINGING_SVIDEO);
-     break;
-
-     case 2:    // RGB
-     video.SetSharpness(Nes::Api::Video::DEFAULT_SHARPNESS_RGB);
-     video.SetColorResolution(Nes::Api::Video::DEFAULT_COLOR_RESOLUTION_RGB);
-     video.SetColorBleed(Nes::Api::Video::DEFAULT_COLOR_BLEED_RGB);
-     video.SetColorArtifacts(Nes::Api::Video::DEFAULT_COLOR_ARTIFACTS_RGB);
-     video.SetColorFringing(Nes::Api::Video::DEFAULT_COLOR_FRINGING_RGB);
-     break;
-     }*/
-    /*
-     video.SetSharpness([self sharpness]);
-     video.SetColorResolution([self colorRes]);
-     video.SetColorBleed([self colorBleed]);
-     video.SetBrightness([self brightness]);
-     video.SetContrast([self contrast]);
-     video.SetColorArtifacts([self colorArtifacts]);
-     video.SetHue([self hue]);
-     video.SetColorFringing([self colorFringing]);
-     video.SetSaturation([self saturation]);
-     */
-    // set the render state, make use of the NES_FAILED macro, expands to: "if(function(...) < Nes::RESULT_OK)"
-    if(NES_FAILED(video.SetRenderState(*renderState)))
-    {
-        printf("NEStopia core rejected render state\n");
-        exit(0);
-    }
-
-    DLog(@"Loaded video");
-}
-
 - (void)setupEmulation
 {
-    //soundLock = [[NSLock alloc] init];
-    // Lets set up the database!
-
-    Nes::Api::Cartridge::Database database(*emu);
-
-    if(!database.IsLoaded())
-    {
-        NSString *databasePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"NstDatabase" ofType:@"xml"];
-        if(databasePath != nil)
-        {
-            DLog(@"Loading database");
-            std::ifstream databaseStream(databasePath.fileSystemRepresentation, std::ifstream::in | std::ifstream::binary);
-            database.Load(databaseStream);
-            database.Enable(true);
-            databaseStream.close();
-        }
-    }
+    // Auto connect controllers/adapter, info from database
+    Nes::Api::Cartridge::Database database(_emu);
 
     if(database.IsLoaded())
     {
-        DLog(@"Database loaded");
-        Nes::Api::Input(*emu).AutoSelectControllers();
-        Nes::Api::Input(*emu).AutoSelectAdapter();
+        Nes::Api::Input(_emu).AutoSelectControllers();
+        Nes::Api::Input(_emu).AutoSelectAdapter();
     }
     else
-        Nes::Api::Input(*emu).ConnectController(0, Nes::Api::Input::PAD1);
+        Nes::Api::Input(_emu).ConnectController(0, Nes::Api::Input::PAD1);
 
-    Nes::Api::Machine machine(*emu);
+    // Auto set video format, info from database
+    Nes::Api::Machine machine(_emu);
     machine.SetMode(machine.GetDesiredMode());
 
-    //nesControls = new Nes::Api::Input::Controllers;
-    //[inputController setupNesController:nesControls];
-    if([self isNTSCEnabled])
-        [self setupVideo:emu withFilter:1];//[[[OpenNestopiaPreferencesController sharedPreferencesController:self] filter] intValue]];
-    else
-        [self setupVideo:emu withFilter:0];
+    // Setup Video
+    Nes::Api::Video::RenderState renderState;
 
-    [self setupAudio:emu];
+    _width  = Nes::Api::Video::Output::WIDTH;
+    _height = Nes::Api::Video::Output::HEIGHT;
 
-    DLog(@"Setup");
+    renderState.bits.count = 32;
+    renderState.bits.mask.r = 0xFF0000;
+    renderState.bits.mask.g = 0x00FF00;
+    renderState.bits.mask.b = 0x0000FF;
+
+    renderState.filter = Nes::Api::Video::RenderState::FILTER_NONE;
+    renderState.width = Nes::Api::Video::Output::WIDTH;
+    renderState.height = Nes::Api::Video::Output::HEIGHT;
+
+    Nes::Api::Video video(_emu);
+    // set the render state, make use of the NES_FAILED macro, expands to: "if(function(...) < Nes::RESULT_OK)"
+    if(NES_FAILED(video.SetRenderState(renderState)))
+    {
+        NSLog(@"[Nestopia] core rejected render state");
+        exit(0);
+    }
+
+    // Setup Audio
+    Nes::Api::Sound sound(_emu);
+    sound.SetSampleBits(16);
+    sound.SetSampleRate(SAMPLERATE);
+    sound.SetVolume(Nes::Api::Sound::ALL_CHANNELS, 100);
+    sound.SetSpeaker(Nes::Api::Sound::SPEAKER_MONO);
+    sound.SetSpeed(self.frameInterval);
+
+    _bufFrameSize = (SAMPLERATE / self.frameInterval);
+
+    _soundBuffer = new int16_t[_bufFrameSize * self.channelCount];
+    [[self ringBufferAtIndex:0] setLength:(sizeof(int16_t) * _bufFrameSize * self.channelCount * 5)];
+
+    memset(_soundBuffer, 0, _bufFrameSize * self.channelCount * sizeof(int16_t));
+    _nesSound->samples[0] = _soundBuffer;
+    _nesSound->length[0] = _bufFrameSize;
+    _nesSound->samples[1] = NULL;
+    _nesSound->length[1] = 0;
 }
-
-- (void)stopEmulation
-{
-    Nes::Api::Machine machine(*emu);
-    //machine.Power(false);
-    machine.Unload(); // this allows FDS to save
-    [super stopEmulation];
-}
-
-# pragma mark -
 
 - (void)executeFrame
 {
-    //Get a reference to the emulator
-    [videoLock lock];
-    [soundLock lock];
-    emu->Execute(nesVideo, nesSound, controls);
-    [[self ringBufferAtIndex:0] write:soundBuffer maxLength:[self channelCount] * bufFrameSize * sizeof(UInt16)];
-    //DLog(@"Wrote %d frames", frames);
-    [videoLock unlock];
-    [soundLock unlock];
-}
+    _emu.Execute(_nesVideo, _nesSound, _controls);
 
-# pragma mark -
+    [[self ringBufferAtIndex:0] write:_soundBuffer maxLength:self.channelCount * _bufFrameSize * sizeof(int16_t)];
+}
 
 - (void)resetEmulation
 {
-    DLog(@"Resetting NES");
-    Nes::Api::Machine machine(*emu);
+    Nes::Api::Machine machine(_emu);
     machine.Reset(true);
-    
+
     // put the disk system back to disk 0 side 0
     if (machine.Is(Nes::Api::Machine::DISK))
     {
-        Nes::Api::Fds fds(*emu);
+        Nes::Api::Fds fds(_emu);
         fds.EjectDisk();
         fds.InsertDisk(0, 0);
     }
 }
 
-- (void)dealloc
+- (void)stopEmulation
 {
-    delete[] soundBuffer;
-    delete[] indirectVideoBuffer;
-    delete emu;
-    delete nesSound;
-    delete nesVideo;
-    delete controls;
+    Nes::Api::Machine machine(_emu);
+    //machine.Power(false);
+    machine.Unload(); // this allows FDS to save
+    [super stopEmulation];
 }
 
-- (oneway void)didPushNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
+- (NSTimeInterval)frameInterval
 {
-    controls->pad[player - 1].buttons |=  NESControlValues[button];
+    Nes::Api::Machine machine(_emu);
+
+    if(machine.GetMode() == Nes::Api::Machine::NTSC)
+        return Nes::Api::Machine::CLK_NTSC_DOT / Nes::Api::Machine::CLK_NTSC_VSYNC; // 60.0988138974
+    else
+        return Nes::Api::Machine::CLK_PAL_DOT / Nes::Api::Machine::CLK_PAL_VSYNC; // 50.0069789082
 }
 
-- (oneway void)didReleaseNESButton:(OENESButton)button forPlayer:(NSUInteger)player;
+# pragma mark - Video
+
+- (const void *)getVideoBufferWithHint:(void *)hint
 {
-    controls->pad[player - 1].buttons &= ~NESControlValues[button];
+    if (!hint)
+    {
+        if(!_indirectVideoBuffer)
+        {
+            _indirectVideoBuffer = new unsigned char[_width * _height * 4];
+        }
+        hint = (void *)_indirectVideoBuffer;
+    }
+    _nesVideo->pixels = hint;
+    _nesVideo->pitch = _width * 4;
+    return hint;
 }
 
-- (oneway void)didTriggerGunAtPoint:(OEIntPoint)aPoint
+- (OEIntRect)screenRect
 {
-    [self mouseMovedAtPoint:aPoint];
-
-    controls->paddle.button = 1;
-    controls->zapper.x = aPoint.x * 0.876712;
-    controls->zapper.y = aPoint.y;
-    controls->zapper.fire = 1;
-    controls->bandaiHyperShot.x = aPoint.x * 0.876712;
-    controls->bandaiHyperShot.y = aPoint.y;
-    controls->bandaiHyperShot.fire = 1;
+    return OEIntRectMake(0, 0, 256, 240);
 }
 
-- (oneway void)didReleaseTrigger
+- (OEIntSize)bufferSize
 {
-    controls->paddle.button = 0;
-    controls->zapper.fire = 0;
-    controls->bandaiHyperShot.fire = 0;
+    return OEIntSizeMake(Nes::Api::Video::Output::WIDTH, Nes::Api::Video::Output::HEIGHT);
 }
 
-- (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
+- (OEIntSize)aspectSize
 {
-    controls->paddle.x = aPoint.x * 0.876712;
+    return OEIntSizeMake(256 * (8.0/7.0), 240);
 }
 
-- (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
+- (GLenum)pixelFormat
 {
-    controls->bandaiHyperShot.move = 1;
+    return GL_BGRA;
 }
 
-- (oneway void)rightMouseUp;
+- (GLenum)pixelType
 {
-    controls->bandaiHyperShot.move = 0;
+    return GL_UNSIGNED_INT_8_8_8_8_REV;
 }
+
+# pragma mark - Audio
 
 - (double)audioSampleRate
 {
@@ -704,33 +334,111 @@ static int Heights[2] =
     return 1;
 }
 
-- (OEIntRect)screenRect
+# pragma mark - Save States
+
+- (void)saveStateToFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
 {
-    return OEIntRectMake(0, 0, 256, 240);
+    Nes::Result result;
+
+    Nes::Api::Machine machine(_emu);
+    std::ofstream stateFile(fileName.fileSystemRepresentation, std::ifstream::out|std::ifstream::binary);
+
+    if(stateFile.is_open())
+        result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
+    else {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
+        }];
+
+        block(NO, error);
+        return;
+    }
+
+    if(NES_FAILED(result))  {
+        NSString *errorDescription = nil;
+        switch(result)
+        {
+            case Nes::RESULT_ERR_NOT_READY :
+                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                break;
+            case Nes::RESULT_ERR_OUT_OF_MEMORY :
+                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                break;
+            default :
+                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                break;
+        }
+
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
+            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription
+        }];
+
+        block(NO, error);
+        return;
+    }
+
+    stateFile.close();
+    block(YES, nil);
 }
 
-- (OEIntSize)aspectSize
+- (void)loadStateFromFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
 {
-    return OEIntSizeMake(256 * (8.0/7.0), 240);
-}
+    Nes::Result result;
 
-- (OEIntSize)bufferSize
-{
-    return [self isNTSCEnabled] ? OEIntSizeMake(Widths[1], Heights[1] * 2)
-    : OEIntSizeMake(Widths[0], Heights[0]);
-}
+    Nes::Api::Machine machine(_emu);
+    std::ifstream stateFile(fileName.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary);
 
-#pragma mark - Save state
+    if(stateFile.is_open())
+        result = machine.LoadState(stateFile);
+    else {
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
+            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
+        }];
+
+        block(NO, error);
+        return;
+    }
+
+    if(NES_FAILED(result)) {
+        NSString *errorDescription = nil;
+        switch(result) {
+            case Nes::RESULT_ERR_NOT_READY :
+                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                break;
+            case Nes::RESULT_ERR_INVALID_CRC :
+                errorDescription = NSLocalizedString(@"Invalid CRC checksum.", @"Invalid CRC checksum.");
+                break;
+            case Nes::RESULT_ERR_OUT_OF_MEMORY :
+                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                break;
+            default :
+                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                break;
+        }
+        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
+            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedRecoverySuggestionErrorKey : errorDescription,
+        }];
+
+        block(NO, error);
+        return;
+    }
+
+    block(YES, nil);
+}
 
 - (NSData *)serializeStateWithError:(NSError **)outError
 {
     Nes::Result result;
-    Nes::Api::Machine machine(*emu);
-    
+    Nes::Api::Machine machine(_emu);
+
     std::stringstream stateStream(std::ios::in|std::ios::out|std::ios::binary);
-    
+
     result = machine.SaveState(stateStream, Nes::Api::Machine::NO_COMPRESSION);
-    
+
     if(NES_FAILED(result)) {
         if (!outError)
             return nil;
@@ -747,12 +455,12 @@ static int Heights[2] =
                 errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
                 break;
         }
-        
+
         *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
             NSLocalizedDescriptionKey : @"The save state data could not be read",
             NSLocalizedRecoverySuggestionErrorKey : errorDescription
         }];
-        
+
         return NO;
     }
 
@@ -768,16 +476,16 @@ static int Heights[2] =
 - (BOOL)deserializeState:(NSData *)state withError:(NSError **)outError
 {
     Nes::Result result;
-    Nes::Api::Machine machine(*emu);
-    
+    Nes::Api::Machine machine(_emu);
+
     std::stringstream stateStream(std::ios::in|std::ios::out|std::ios::binary);
-    
-    char const *bytes = (char const *)([state bytes]);
-    std::streamsize size = [state length];
+
+    char const *bytes = (char const *)(state.bytes);
+    std::streamsize size = state.length;
     stateStream.write(bytes, size);
-    
+
     result = machine.LoadState(stateStream);
-    
+
     if(NES_FAILED(result)) {
         if (!outError)
             return NO;
@@ -804,140 +512,127 @@ static int Heights[2] =
 
         return NO;
     }
-    
+
     return YES;
 }
 
-- (void)saveStateToFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
-{
-    const char* filename = [fileName fileSystemRepresentation];
-    
-    Nes::Result result;
-    
-    Nes::Api::Machine machine(*emu);
-    std::ofstream stateFile(filename, std::ifstream::out|std::ifstream::binary);
-    
-    if(stateFile.is_open())
-        result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
-    else {
-        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
-            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
-        }];
+# pragma mark - Input
 
-        block(NO, error);
-        return;
-    }
-    
-    if(NES_FAILED(result))  {
-        NSString *errorDescription = nil;
-        switch(result)
-        {
-            case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
-                break;
-            case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
-                break;
-            default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
-                break;
-        }
-        
-        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-            NSLocalizedDescriptionKey : @"The save state data could not be read",
-            NSLocalizedRecoverySuggestionErrorKey : errorDescription
-        }];
-        
-        block(NO, error);
-        return;
-    }
-    
-    stateFile.close();
-    block(YES, nil);
+NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Api::Input::Controllers::Pad::DOWN, Nes::Api::Input::Controllers::Pad::LEFT, Nes::Api::Input::Controllers::Pad::RIGHT, Nes::Api::Input::Controllers::Pad::A, Nes::Api::Input::Controllers::Pad::B, Nes::Api::Input::Controllers::Pad::START, Nes::Api::Input::Controllers::Pad::SELECT
+};
+- (oneway void)didPushNESButton:(OENESButton)button forPlayer:(NSUInteger)player
+{
+    _controls->pad[player - 1].buttons |=  NESControlValues[button];
 }
 
-- (void)loadStateFromFileAtPath:(NSString *)fileName completionHandler:(void (^)(BOOL, NSError *))block
+- (oneway void)didReleaseNESButton:(OENESButton)button forPlayer:(NSUInteger)player
 {
-    Nes::Result result;
-    
-    Nes::Api::Machine machine(*emu);
-    std::ifstream stateFile( fileName.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary );
-    
-    if(stateFile.is_open())
-        result = machine.LoadState(stateFile);
-    else {
-        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
-            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
-            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
-        }];
+    _controls->pad[player - 1].buttons &= ~NESControlValues[button];
+}
 
-        block(NO, error);
-        return;
+- (oneway void)didTriggerGunAtPoint:(OEIntPoint)aPoint
+{
+    [self mouseMovedAtPoint:aPoint];
+
+    _controls->paddle.button = 1;
+    _controls->zapper.x = aPoint.x * 0.876712;
+    _controls->zapper.y = aPoint.y;
+    _controls->zapper.fire = 1;
+    _controls->bandaiHyperShot.x = aPoint.x * 0.876712;
+    _controls->bandaiHyperShot.y = aPoint.y;
+    _controls->bandaiHyperShot.fire = 1;
+}
+
+- (oneway void)didReleaseTrigger
+{
+    _controls->paddle.button = 0;
+    _controls->zapper.fire = 0;
+    _controls->bandaiHyperShot.fire = 0;
+}
+
+- (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
+{
+    _controls->paddle.x = aPoint.x * 0.876712;
+}
+
+- (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
+{
+    _controls->bandaiHyperShot.move = 1;
+}
+
+- (oneway void)rightMouseUp
+{
+    _controls->bandaiHyperShot.move = 0;
+}
+
+- (oneway void)didPushFDSChangeSideButton
+{
+    Nes::Api::Fds fds(_emu);
+    //fds.ChangeSide();
+    Nes::Result result;
+    if (fds.IsAnyDiskInserted() && fds.CanChangeDiskSide())
+        result = fds.ChangeSide();
+    else
+        result = fds.InsertDisk(0, 0);
+    NSLog(@"[Nestopia] didPushFDSChangeSideButton: %d", result);
+}
+
+- (oneway void)didReleaseFDSChangeSideButton
+{
+
+}
+
+- (oneway void)didPushFDSChangeDiskButton
+{
+    Nes::Api::Fds fds(_emu);
+    // if multi-disk game, eject and insert the other disk
+    if (fds.GetNumDisks() > 1)
+    {
+        int currdisk = fds.GetCurrentDisk();
+        fds.EjectDisk();
+        fds.InsertDisk(!currdisk, 0);
+
+        NSLog(@"[Nestopia] didPushFDSChangeDiskButton");
     }
-    
-    if(NES_FAILED(result)) {
-        NSString *errorDescription = nil;
-        switch(result) {
-            case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
-                break;
-            case Nes::RESULT_ERR_INVALID_CRC :
-                errorDescription = NSLocalizedString(@"Invalid CRC checksum.", @"Invalid CRC checksum.");
-                break;
-            case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
-                break;
-            default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
-                break;
-        }
-        NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
-            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
-            NSLocalizedRecoverySuggestionErrorKey : errorDescription,
-        }];
-        
-        block(NO, error);
-        return;
-    }
-    
-    block(YES, nil);
+}
+
+- (oneway void)didReleaseFDSChangeDiskButton;
+{
+
 }
 
 #pragma mark - Cheats
 
-NSMutableDictionary *cheatList = [[NSMutableDictionary alloc] init];
-
 - (void)setCheat:(NSString *)code setType:(NSString *)type setEnabled:(BOOL)enabled
 {
     // Sanitize
-    code = [code stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
+    code = [code stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+
     // Remove any spaces
     code = [code stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    Nes::Api::Cheats cheater(*emu);
+
+    Nes::Api::Cheats cheater(_emu);
     Nes::Api::Cheats::Code ggCode;
-    
+
     if (enabled)
-        [cheatList setValue:@YES forKey:code];
+        _cheatList[code] = @YES;
     else
-        [cheatList removeObjectForKey:code];
-    
+        [_cheatList removeObjectForKey:code];
+
     cheater.ClearCodes();
-    
-    NSArray *multipleCodes = [[NSArray alloc] init];
-    
+
+    NSArray<NSString *> *multipleCodes = [NSArray array];
+
     // Apply enabled cheats found in dictionary
-    for (id key in cheatList)
+    for (NSString *key in _cheatList)
     {
-        if ([[cheatList valueForKey:key] isEqual:@YES])
+        if ([_cheatList[key] boolValue])
         {
             // Handle multi-line cheats
             multipleCodes = [key componentsSeparatedByString:@"+"];
             for (NSString *singleCode in multipleCodes) {
-                const char *cCode = [singleCode UTF8String];
-                
+                const char *cCode = singleCode.UTF8String;
+
                 Nes::Api::Cheats::GameGenieDecode(cCode, ggCode);
                 cheater.SetCode(ggCode);
             }
@@ -945,74 +640,160 @@ NSMutableDictionary *cheatList = [[NSMutableDictionary alloc] init];
     }
 }
 
-- (oneway void)didPushFDSChangeSideButton;
-{
-    Nes::Api::Fds fds(*emu);
-    //fds.ChangeSide();
-    //NSLog(@"didPushFDSChangeSideButton");
-	Nes::Result result;
-	if (fds.IsAnyDiskInserted() && fds.CanChangeDiskSide())
-		result = fds.ChangeSide();
-	else
-		result = fds.InsertDisk(0, 0);
-	NSLog(@"didPushFDSChangeSideButton: %d", result);
-}
-
-- (oneway void)didReleaseFDSChangeSideButton;
-{
-    
-}
-
-- (oneway void)didPushFDSChangeDiskButton;
-{
-    Nes::Api::Fds fds(*emu);
-    // if multi-disk game, eject and insert the other disk
-	if (fds.GetNumDisks() > 1)
-    {
-        int currdisk = fds.GetCurrentDisk();
-        fds.EjectDisk();
-        fds.InsertDisk(!currdisk, 0);
-        
-        NSLog(@"didPushFDSChangeDiskButton");
-    }
-}
-
-- (oneway void)didReleaseFDSChangeDiskButton;
-{
-    
-}
+# pragma mark - Display Mode
 
 - (void)changeDisplayMode
 {
-    Nes::Api::Video video(*emu);
-    
-	switch (displayMode)
+    Nes::Api::Video video(_emu);
+
+    switch (displayMode)
     {
         case 0:
             video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
             video.SetDecoder(Nes::Api::Video::DECODER_CONSUMER);
             displayMode++;
             break;
-			
+
         case 1:
             video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
             video.SetDecoder(Nes::Api::Video::DECODER_ALTERNATIVE);
             displayMode++;
             break;
-			
+
         case 2:
             video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_RGB);
             displayMode++;
             break;
-            
+
         case 3:
             video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
             video.SetDecoder(Nes::Api::Video::DECODER_CANONICAL);
             displayMode = 0;
             break;
-			
+
         default:
             return;
+            break;
+    }
+}
+
+# pragma mark - Callbacks
+
+// for various file operations, usually called during image file load, power on/off and reset
+void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File &file)
+{
+    GET_CURRENT_OR_RETURN();
+
+    NSFileManager *fileManager = NSFileManager.defaultManager;
+    NSURL *url = current->_romURL;
+
+    NSString *extensionlessFilename = url.lastPathComponent.stringByDeletingPathExtension;
+    NSURL *batterySavesDirectory = [NSURL fileURLWithPath:current.batterySavesDirectoryPath];
+    [fileManager createDirectoryAtURL:batterySavesDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+
+    NSData *theData;
+    NSURL *saveFileURL;
+
+    switch(file.GetAction())
+    {
+        case Nes::Api::User::File::LOAD_SAMPLE :
+        case Nes::Api::User::File::LOAD_ROM :
+            break;
+
+        case Nes::Api::User::File::LOAD_BATTERY : // load in battery data from a file
+        case Nes::Api::User::File::LOAD_EEPROM : // used by some Bandai games, can be treated the same as battery files
+        {
+            saveFileURL = [batterySavesDirectory URLByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            if(![saveFileURL checkResourceIsReachableAndReturnError:nil])
+            {
+                NSLog(@"[Nestopia] Couldn't find Battery/EEPROM save at: %@", saveFileURL);
+                return;
+            }
+            NSLog(@"[Nestopia] Loading Battery/EEPROM save: %@", saveFileURL);
+            theData = [NSData dataWithContentsOfURL:saveFileURL];
+            file.SetContent(theData.bytes, theData.length);
+            break;
+        }
+        case Nes::Api::User::File::SAVE_BATTERY : // save battery data to a file
+        case Nes::Api::User::File::SAVE_EEPROM : // can be treated the same as battery files
+        {
+            NSLog(@"[Nestopia] Saving Battery/EEPROM");
+            const void *saveData;
+            unsigned long saveDataSize;
+            file.GetContent(saveData, saveDataSize);
+            saveFileURL = [batterySavesDirectory URLByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            theData = [NSData dataWithBytes:saveData length:saveDataSize];
+            [theData writeToURL:saveFileURL atomically:YES];
+            break;
+        }
+        case Nes::Api::User::File::LOAD_FDS:
+        {
+            NSLog(@"[Nestopia] Loading FDS save");
+            saveFileURL = [batterySavesDirectory URLByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            std::ifstream in_tmp(saveFileURL.fileSystemRepresentation, std::ifstream::in|std::ifstream::binary);
+
+            if (!in_tmp.is_open())
+                return;
+
+            file.SetPatchContent(in_tmp);
+            break;
+        }
+        case Nes::Api::User::File::SAVE_FDS: // for saving modified Famicom Disk System files
+        {
+            NSLog(@"[Nestopia] Saving FDS");
+            saveFileURL = [batterySavesDirectory URLByAppendingPathComponent:[extensionlessFilename stringByAppendingPathExtension:@"sav"]];
+            std::ofstream out_tmp(saveFileURL.fileSystemRepresentation, std::ifstream::out|std::ifstream::binary);
+
+            if (out_tmp.is_open())
+                file.GetPatchContent(Nes::Api::User::File::PATCH_UPS, out_tmp);
+            break;
+        }
+        case Nes::Api::User::File::LOAD_TAPE : // for loading Famicom cassette tapes
+        case Nes::Api::User::File::SAVE_TAPE : // for saving Famicom cassette tapes
+        case Nes::Api::User::File::LOAD_TURBOFILE : // for loading turbofile data
+        case Nes::Api::User::File::SAVE_TURBOFILE : // for saving turbofile data
+            break;
+
+        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_YAKYUU :
+        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_YAKYUU_88 :
+        case Nes::Api::User::File::LOAD_SAMPLE_MOERO_PRO_TENNIS :
+        case Nes::Api::User::File::LOAD_SAMPLE_TERAO_NO_DOSUKOI_OOZUMOU :
+        case Nes::Api::User::File::LOAD_SAMPLE_AEROBICS_STUDIO :
+            break;
+    }
+}
+
+Nes::Api::User::Answer NST_CALLBACK doQuestion(void *userData, Nes::Api::User::Question question)
+{
+    switch(question)
+    {
+        case Nes::Api::User::QUESTION_NST_PRG_CRC_FAIL_CONTINUE :
+            break;
+        case Nes::Api::User::QUESTION_NSV_PRG_CRC_FAIL_CONTINUE :
+            break;
+    }
+
+    NSLog(@"[Nestopia] CRC Failed");
+    return Nes::Api::User::ANSWER_DEFAULT;
+}
+
+void NST_CALLBACK doLog(void *userData, const char *text, unsigned long length)
+{
+    NSLog(@"[Nestopia] %@", [NSString stringWithUTF8String:text]);
+}
+
+void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::Result result)
+{
+    switch(event)
+    {
+        case Nes::Api::Machine::EVENT_LOAD :
+        case Nes::Api::Machine::EVENT_UNLOAD :
+        case Nes::Api::Machine::EVENT_POWER_ON :
+        case Nes::Api::Machine::EVENT_POWER_OFF :
+        case Nes::Api::Machine::EVENT_RESET_SOFT :
+        case Nes::Api::Machine::EVENT_RESET_HARD :
+        case Nes::Api::Machine::EVENT_MODE_NTSC :
+        case Nes::Api::Machine::EVENT_MODE_PAL :
             break;
     }
 }
