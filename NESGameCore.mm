@@ -560,13 +560,16 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 {
     [self mouseMovedAtPoint:aPoint];
 
-    _controls->paddle.button = 1;
     // Nes::Api::Video::Output::WIDTH / (Nes::Api::Video::Output::WIDTH * 8.0/7.0) = 0.876712
-    _controls->zapper.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
-    _controls->zapper.y = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
+    int xcoord = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
+    int ycoord = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
+
+    _controls->paddle.button = 1;
+    _controls->zapper.x = xcoord;
+    _controls->zapper.y = ycoord;
     _controls->zapper.fire = 1;
-    _controls->bandaiHyperShot.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
-    _controls->bandaiHyperShot.y = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
+    _controls->bandaiHyperShot.x = xcoord;
+    _controls->bandaiHyperShot.y = ycoord;
     _controls->bandaiHyperShot.fire = 1;
 }
 
