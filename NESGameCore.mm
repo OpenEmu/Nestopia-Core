@@ -47,15 +47,28 @@
 #include <sstream>
 
 #define SAMPLERATE 48000
+#define OVERSCAN_VERTICAL 8
+#define OVERSCAN_HORIZONTAL 8
+
+#define OptionDefault(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @YES, }
+#define Option(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, }
+#define OptionIndented(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, OEGameCoreDisplayModeIndentationLevelKey : @(1), }
+#define OptionToggleable(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, OEGameCoreDisplayModeAllowsToggleKey : @YES, }
+#define OptionToggleableNoSave(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, OEGameCoreDisplayModeAllowsToggleKey : @YES, OEGameCoreDisplayModeDisallowPrefSaveKey : @YES, }
+#define Label(_NAME_) @{ OEGameCoreDisplayModeLabelKey : _NAME_, }
+#define SeparatorItem() @{ OEGameCoreDisplayModeSeparatorItemKey : @"",}
 
 @interface NESGameCore () <OENESSystemResponderClient, OEFDSSystemResponderClient>
 {
     NSURL               *_romURL;
     int                  _bufFrameSize;
-    NSUInteger           _width;
-    NSUInteger           _height;
+    int                  _videoWidth, _videoHeight;
+    int                  _videoOffsetX, _videoOffsetY;
+    int                  _aspectWidth, _aspectHeight;
     const unsigned char *_indirectVideoBuffer;
     int16_t             *_soundBuffer;
+    BOOL                 _isHorzOverscanCropped;
+    BOOL                 _isVertOverscanCropped;
 
     Nes::Api::Emulator       _emu;
     Nes::Api::Sound::Output *_nesSound;
@@ -63,14 +76,16 @@
     Nes::Api::Input::Controllers *_controls;
 
     NSMutableDictionary<NSString *, NSNumber *> *_cheatList;
+    NSMutableArray <NSMutableDictionary <NSString *, id> *> *_availableDisplayModes;
 }
+
+- (void)loadDisplayModeOptions;
 
 @end
 
 @implementation NESGameCore
 
 static __weak NESGameCore *_current;
-int displayMode = 0;
 
 - (id)init;
 {
@@ -106,7 +121,6 @@ int displayMode = 0;
     // Load database
     if(!database.IsLoaded())
     {
-        NSLog(@"[Nestopia] loading db");
         NSURL *databaseURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"NstDatabase" withExtension:@"xml"];
         if ([databaseURL checkResourceIsReachableAndReturnError:nil])
         {
@@ -115,6 +129,8 @@ int displayMode = 0;
             database.Enable(true);
             databaseStream.close();
         }
+        else
+            NSLog(@"[Nestopia] NstDatabase.xml not found!");
     }
 
     _romURL = [NSURL fileURLWithPath:path];
@@ -178,6 +194,11 @@ int displayMode = 0;
     if (machine.Is(Nes::Api::Machine::DISK))
         fds.InsertDisk(0, 0);
 
+    // Only temporary, so core doesn't crash on an older OpenEmu version
+    if ([self respondsToSelector:@selector(displayModeInfo)]) {
+        [self loadDisplayModeOptions];
+    }
+
     return YES;
 }
 
@@ -200,9 +221,6 @@ int displayMode = 0;
 
     // Setup Video
     Nes::Api::Video::RenderState renderState;
-
-    _width  = Nes::Api::Video::Output::WIDTH;
-    _height = Nes::Api::Video::Output::HEIGHT;
 
     renderState.bits.count = 32;
     renderState.bits.mask.r = 0xFF0000;
@@ -288,18 +306,23 @@ int displayMode = 0;
     {
         if(!_indirectVideoBuffer)
         {
-            _indirectVideoBuffer = new unsigned char[_width * _height * 4];
+            _indirectVideoBuffer = new unsigned char[Nes::Api::Video::Output::WIDTH * Nes::Api::Video::Output::HEIGHT * 4];
         }
         hint = (void *)_indirectVideoBuffer;
     }
     _nesVideo->pixels = hint;
-    _nesVideo->pitch = _width * 4;
+    _nesVideo->pitch = Nes::Api::Video::Output::WIDTH * 4;
     return hint;
 }
 
 - (OEIntRect)screenRect
 {
-    return OEIntRectMake(0, 0, 256, 240);
+    _videoOffsetX = _isHorzOverscanCropped ? OVERSCAN_HORIZONTAL : 0;
+    _videoOffsetY = _isVertOverscanCropped ? OVERSCAN_VERTICAL   : 0;
+    _videoWidth   = _isHorzOverscanCropped ? 256 - (OVERSCAN_HORIZONTAL * 2) : 256;
+    _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL   * 2) : 240;
+
+    return OEIntRectMake(_videoOffsetX, _videoOffsetY, _videoWidth, _videoHeight);
 }
 
 - (OEIntSize)bufferSize
@@ -309,7 +332,10 @@ int displayMode = 0;
 
 - (OEIntSize)aspectSize
 {
-    return OEIntSizeMake(256 * (8.0/7.0), 240);
+    _aspectWidth  = _isHorzOverscanCropped ? (256 - (OVERSCAN_HORIZONTAL * 2)) * (8.0/7.0) : 256 * (8.0/7.0);
+    _aspectHeight = _isVertOverscanCropped ?  240 - (OVERSCAN_VERTICAL   * 2)              : 240;
+
+    return OEIntSizeMake(_aspectWidth, _aspectHeight);
 }
 
 - (GLenum)pixelFormat
@@ -535,11 +561,12 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     [self mouseMovedAtPoint:aPoint];
 
     _controls->paddle.button = 1;
-    _controls->zapper.x = aPoint.x * 0.876712;
-    _controls->zapper.y = aPoint.y;
+    // Nes::Api::Video::Output::WIDTH / (Nes::Api::Video::Output::WIDTH * 8.0/7.0) = 0.876712
+    _controls->zapper.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
+    _controls->zapper.y = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
     _controls->zapper.fire = 1;
-    _controls->bandaiHyperShot.x = aPoint.x * 0.876712;
-    _controls->bandaiHyperShot.y = aPoint.y;
+    _controls->bandaiHyperShot.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
+    _controls->bandaiHyperShot.y = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
     _controls->bandaiHyperShot.fire = 1;
 }
 
@@ -552,7 +579,7 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 
 - (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
 {
-    _controls->paddle.x = aPoint.x * 0.876712;
+    _controls->paddle.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
 }
 
 - (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
@@ -642,38 +669,231 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 
 # pragma mark - Display Mode
 
-- (void)changeDisplayMode
+- (NSArray <NSDictionary <NSString *, id> *> *)displayModes
 {
-    Nes::Api::Video video(_emu);
-
-    switch (displayMode)
+    if (_availableDisplayModes.count == 0)
     {
-        case 0:
-            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
-            video.SetDecoder(Nes::Api::Video::DECODER_CONSUMER);
-            displayMode++;
-            break;
+        _availableDisplayModes = [NSMutableArray array];
 
-        case 1:
-            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
-            video.SetDecoder(Nes::Api::Video::DECODER_ALTERNATIVE);
-            displayMode++;
-            break;
+        NSArray <NSDictionary <NSString *, id> *> *availableModesWithDefault =
+        @[
+          OptionToggleableNoSave(@"No Sprite Limit", @"noSpriteLimit"),
+          SeparatorItem(),
+          Label(@"Overscan"),
+          OptionToggleable(@"Crop Horizontal", @"cropHorizontalOverscan"),
+          OptionToggleable(@"Crop Vertical", @"cropVerticalOverscan"),
+          SeparatorItem(),
+          Label(@"Palette"),
+          OptionDefault(@"15° Canonical — Nestopia", @"palette"),
+          Option(@"Consumer — Nestopia", @"palette"),
+          Option(@"Alternative — Nestopia", @"palette"),
+          Option(@"RGB (PlayChoice-10)", @"palette"),
+          Option(@"NESCAP", @"palette"),
+          Option(@"Sony CXA2025AS", @"palette"),
+          Option(@"Smooth (FBX)", @"palette"),
+          Option(@"Wavebeam", @"palette"),
+          ];
 
-        case 2:
-            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_RGB);
-            displayMode++;
-            break;
+        // Deep mutable copy
+        _availableDisplayModes = (NSMutableArray *)CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (CFArrayRef)availableModesWithDefault, kCFPropertyListMutableContainers));
+    }
 
-        case 3:
-            video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
-            video.SetDecoder(Nes::Api::Video::DECODER_CANONICAL);
-            displayMode = 0;
-            break;
+    return [_availableDisplayModes copy];
+}
 
-        default:
-            return;
+- (void)changeDisplayWithMode:(NSString *)displayMode
+{
+    if (_availableDisplayModes.count == 0)
+        [self displayModes];
+
+    // First check if 'displayMode' is valid
+    BOOL isDisplayModeToggleable = NO;
+    BOOL isValidDisplayMode = NO;
+    BOOL displayModeState = NO;
+    NSString *displayModePrefKey;
+
+    for (NSDictionary *modeDict in _availableDisplayModes) {
+        if ([modeDict[OEGameCoreDisplayModeNameKey] isEqualToString:displayMode]) {
+            displayModeState = [modeDict[OEGameCoreDisplayModeStateKey] boolValue];
+            displayModePrefKey = modeDict[OEGameCoreDisplayModePrefKeyNameKey];
+            isDisplayModeToggleable = [modeDict[OEGameCoreDisplayModeAllowsToggleKey] boolValue];
+            isValidDisplayMode = YES;
             break;
+        }
+    }
+
+    // Disallow a 'displayMode' not found in _availableDisplayModes
+    if (!isValidDisplayMode)
+        return;
+
+    // Handle option state changes
+    for (NSMutableDictionary *optionDict in _availableDisplayModes) {
+        NSString *modeName =  optionDict[OEGameCoreDisplayModeNameKey];
+        NSString *prefKey  =  optionDict[OEGameCoreDisplayModePrefKeyNameKey];
+        BOOL isToggleable  = [optionDict[OEGameCoreDisplayModeAllowsToggleKey] boolValue];
+        BOOL isSelected    = [optionDict[OEGameCoreDisplayModeStateKey] boolValue];
+
+        if (optionDict[OEGameCoreDisplayModeSeparatorItemKey] || optionDict[OEGameCoreDisplayModeLabelKey])
+            continue;
+        // Mutually exclusive option state change
+        else if ([modeName isEqualToString:displayMode] && !isToggleable)
+            optionDict[OEGameCoreDisplayModeStateKey] = @YES;
+        // Reset mutually exclusive options that are the same prefs group as 'displayMode'
+        else if (!isDisplayModeToggleable && [prefKey isEqualToString:displayModePrefKey])
+            optionDict[OEGameCoreDisplayModeStateKey] = @NO;
+        // Toggleable option state change
+        else if ([modeName isEqualToString:displayMode] && isToggleable)
+            optionDict[OEGameCoreDisplayModeStateKey] = @(!isSelected);
+    }
+
+    Nes::Api::Video video(_emu);
+    if ([displayMode isEqualToString:@"Crop Horizontal"])
+    {
+        _isHorzOverscanCropped = !_isHorzOverscanCropped;
+    }
+    else if ([displayMode isEqualToString:@"Crop Vertical"])
+    {
+        _isVertOverscanCropped = !_isVertOverscanCropped;
+    }
+    else if ([displayMode isEqualToString:@"No Sprite Limit"])
+    {
+        video.EnableUnlimSprites(!displayModeState);
+    }
+    else if ([displayMode isEqualToString:@"15° Canonical — Nestopia"])
+    {
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+        video.SetDecoder(Nes::Api::Video::DECODER_CANONICAL);
+    }
+    else if ([displayMode isEqualToString:@"Consumer — Nestopia"])
+    {
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+        video.SetDecoder(Nes::Api::Video::DECODER_CONSUMER);
+    }
+    else if ([displayMode isEqualToString:@"Alternative — Nestopia"])
+    {
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_YUV);
+        video.SetDecoder(Nes::Api::Video::DECODER_ALTERNATIVE);
+    }
+    else if ([displayMode isEqualToString:@"RGB (PlayChoice-10)"])
+    {
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_RGB);
+    }
+    else if ([displayMode isEqualToString:@"NESCAP"])
+    {
+        static const unsigned char nescap_palette[64][3] =
+        {
+            {0x64, 0x63, 0x65}, {0x00, 0x15, 0x80}, {0x1D, 0x00, 0x90}, {0x38, 0x00, 0x82},
+            {0x56, 0x00, 0x5D}, {0x5A, 0x00, 0x1A}, {0x4F, 0x09, 0x00}, {0x38, 0x1B, 0x00},
+            {0x1E, 0x31, 0x00}, {0x00, 0x3D, 0x00}, {0x00, 0x41, 0x00}, {0x00, 0x3A, 0x1B},
+            {0x00, 0x2F, 0x55}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xAF, 0xAD, 0xAF}, {0x16, 0x4B, 0xCA}, {0x47, 0x2A, 0xE7}, {0x6B, 0x1B, 0xDB},
+            {0x96, 0x17, 0xB0}, {0x9F, 0x18, 0x5B}, {0x96, 0x30, 0x01}, {0x7B, 0x48, 0x00},
+            {0x5A, 0x66, 0x00}, {0x23, 0x78, 0x00}, {0x01, 0x7F, 0x00}, {0x00, 0x78, 0x3D},
+            {0x00, 0x6C, 0x8C}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0x60, 0xA6, 0xFF}, {0x8F, 0x84, 0xFF}, {0xB4, 0x73, 0xFF},
+            {0xE2, 0x6C, 0xFF}, {0xF2, 0x68, 0xC3}, {0xEF, 0x7E, 0x61}, {0xD8, 0x95, 0x27},
+            {0xBA, 0xB3, 0x07}, {0x81, 0xC8, 0x07}, {0x57, 0xD4, 0x3D}, {0x47, 0xCF, 0x7E},
+            {0x4B, 0xC5, 0xCD}, {0x4C, 0x4B, 0x4D}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0xC2, 0xE0, 0xFF}, {0xD5, 0xD2, 0xFF}, {0xE3, 0xCB, 0xFF},
+            {0xF7, 0xC8, 0xFF}, {0xFE, 0xC6, 0xEE}, {0xFE, 0xCE, 0xC6}, {0xF6, 0xD7, 0xAE},
+            {0xE9, 0xE4, 0x9F}, {0xD3, 0xED, 0x9D}, {0xC0, 0xF2, 0xB2}, {0xB9, 0xF1, 0xCC},
+            {0xBA, 0xED, 0xED}, {0xBA, 0xB9, 0xBB}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(nescap_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+    else if ([displayMode isEqualToString:@"Sony CXA2025AS"])
+    {
+        static const unsigned char cxa2025as_palette[64][3] =
+        {
+            {0x58,0x58,0x58}, {0x00,0x23,0x8C}, {0x00,0x13,0x9B}, {0x2D,0x05,0x85},
+            {0x5D,0x00,0x52}, {0x7A,0x00,0x17}, {0x7A,0x08,0x00}, {0x5F,0x18,0x00},
+            {0x35,0x2A,0x00}, {0x09,0x39,0x00}, {0x00,0x3F,0x00}, {0x00,0x3C,0x22},
+            {0x00,0x32,0x5D}, {0x00,0x00,0x00}, {0x00,0x00,0x00}, {0x00,0x00,0x00},
+            {0xA1,0xA1,0xA1}, {0x00,0x53,0xEE}, {0x15,0x3C,0xFE}, {0x60,0x28,0xE4},
+            {0xA9,0x1D,0x98}, {0xD4,0x1E,0x41}, {0xD2,0x2C,0x00}, {0xAA,0x44,0x00},
+            {0x6C,0x5E,0x00}, {0x2D,0x73,0x00}, {0x00,0x7D,0x06}, {0x00,0x78,0x52},
+            {0x00,0x69,0xA9}, {0x00,0x00,0x00}, {0x00,0x00,0x00}, {0x00,0x00,0x00},
+            {0xFF,0xFF,0xFF}, {0x1F,0xA5,0xFE}, {0x5E,0x89,0xFE}, {0xB5,0x72,0xFE},
+            {0xFE,0x65,0xF6}, {0xFE,0x67,0x90}, {0xFE,0x77,0x3C}, {0xFE,0x93,0x08},
+            {0xC4,0xB2,0x00}, {0x79,0xCA,0x10}, {0x3A,0xD5,0x4A}, {0x11,0xD1,0xA4},
+            {0x06,0xBF,0xFE}, {0x42,0x42,0x42}, {0x00,0x00,0x00}, {0x00,0x00,0x00},
+            {0xFF,0xFF,0xFF}, {0xA0,0xD9,0xFE}, {0xBD,0xCC,0xFE}, {0xE1,0xC2,0xFE},
+            {0xFE,0xBC,0xFB}, {0xFE,0xBD,0xD0}, {0xFE,0xC5,0xA9}, {0xFE,0xD1,0x8E},
+            {0xE9,0xDE,0x86}, {0xC7,0xE9,0x92}, {0xA8,0xEE,0xB0}, {0x95,0xEC,0xD9},
+            {0x91,0xE4,0xFE}, {0xAC,0xAC,0xAC}, {0x00,0x00,0x00}, {0x00,0x00,0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(cxa2025as_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+    else if ([displayMode isEqualToString:@"Smooth (FBX)"])
+    {
+        static const unsigned char smoothfbx_palette[64][3] =
+        {
+            {0x6A, 0x6D, 0x6A}, {0x00, 0x13, 0x80}, {0x1E, 0x00, 0x8A}, {0x39, 0x00, 0x7A},
+            {0x55, 0x00, 0x56}, {0x5A, 0x00, 0x18}, {0x4F, 0x10, 0x00}, {0x3D, 0x1C, 0x00},
+            {0x25, 0x32, 0x00}, {0x00, 0x3D, 0x00}, {0x00, 0x40, 0x00}, {0x00, 0x39, 0x24},
+            {0x00, 0x2E, 0x55}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xB9, 0xBC, 0xB9}, {0x18, 0x50, 0xC7}, {0x4B, 0x30, 0xE3}, {0x73, 0x22, 0xD6},
+            {0x95, 0x1F, 0xA9}, {0x9D, 0x28, 0x5C}, {0x98, 0x37, 0x00}, {0x7F, 0x4C, 0x00},
+            {0x5E, 0x64, 0x00}, {0x22, 0x77, 0x00}, {0x02, 0x7E, 0x02}, {0x00, 0x76, 0x45},
+            {0x00, 0x6E, 0x8A}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0x68, 0xA6, 0xFF}, {0x8C, 0x9C, 0xFF}, {0xB5, 0x86, 0xFF},
+            {0xD9, 0x75, 0xFD}, {0xE3, 0x77, 0xB9}, {0xE5, 0x8D, 0x68}, {0xD4, 0x9D, 0x29},
+            {0xB3, 0xAF, 0x0C}, {0x7B, 0xC2, 0x11}, {0x55, 0xCA, 0x47}, {0x46, 0xCB, 0x81},
+            {0x47, 0xC1, 0xC5}, {0x4A, 0x4D, 0x4A}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0xCC, 0xEA, 0xFF}, {0xDD, 0xDE, 0xFF}, {0xEC, 0xDA, 0xFF},
+            {0xF8, 0xD7, 0xFE}, {0xFC, 0xD6, 0xF5}, {0xFD, 0xDB, 0xCF}, {0xF9, 0xE7, 0xB5},
+            {0xF1, 0xF0, 0xAA}, {0xDA, 0xFA, 0xA9}, {0xC9, 0xFF, 0xBC}, {0xC3, 0xFB, 0xD7},
+            {0xC4, 0xF6, 0xF6}, {0xBE, 0xC1, 0xBE}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(smoothfbx_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+    else if ([displayMode isEqualToString:@"Wavebeam"])
+    {
+        static const unsigned char wavebeam_palette[64][3] =
+        {
+            {0x6B, 0x6B, 0x6B}, {0x00, 0x1B, 0x88}, {0x21, 0x00, 0x9A}, {0x40, 0x00, 0x8C},
+            {0x60, 0x00, 0x67}, {0x64, 0x00, 0x1E}, {0x59, 0x08, 0x00}, {0x48, 0x16, 0x00},
+            {0x28, 0x36, 0x00}, {0x00, 0x45, 0x00}, {0x00, 0x49, 0x08}, {0x00, 0x42, 0x1D},
+            {0x00, 0x36, 0x59}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xB4, 0xB4, 0xB4}, {0x15, 0x55, 0xD3}, {0x43, 0x37, 0xEF}, {0x74, 0x25, 0xDF},
+            {0x9C, 0x19, 0xB9}, {0xAC, 0x0F, 0x64}, {0xAA, 0x2C, 0x00}, {0x8A, 0x4B, 0x00},
+            {0x66, 0x6B, 0x00}, {0x21, 0x83, 0x00}, {0x00, 0x8A, 0x00}, {0x00, 0x81, 0x44},
+            {0x00, 0x76, 0x91}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0x63, 0xB2, 0xFF}, {0x7C, 0x9C, 0xFF}, {0xC0, 0x7D, 0xFE},
+            {0xE9, 0x77, 0xFF}, {0xF5, 0x72, 0xCD}, {0xF4, 0x88, 0x6B}, {0xDD, 0xA0, 0x29},
+            {0xBD, 0xBD, 0x0A}, {0x89, 0xD2, 0x0E}, {0x5C, 0xDE, 0x3E}, {0x4B, 0xD8, 0x86},
+            {0x4D, 0xCF, 0xD2}, {0x52, 0x52, 0x52}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0xBC, 0xDF, 0xFF}, {0xD2, 0xD2, 0xFF}, {0xE1, 0xC8, 0xFF},
+            {0xEF, 0xC7, 0xFF}, {0xFF, 0xC3, 0xE1}, {0xFF, 0xCA, 0xC6}, {0xF2, 0xDA, 0xAD},
+            {0xEB, 0xE3, 0xA0}, {0xD2, 0xED, 0xA2}, {0xBC, 0xF4, 0xB4}, {0xB5, 0xF1, 0xCE},
+            {0xB6, 0xEC, 0xF1}, {0xBF, 0xBF, 0xBF}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(wavebeam_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+}
+
+- (void)loadDisplayModeOptions
+{
+    // Restore palette
+    NSString *lastFormat = self.displayModeInfo[@"palette"];
+    if (lastFormat && ![lastFormat isEqualToString:@"15° Canonical — Nestopia"]) {
+        [self changeDisplayWithMode:lastFormat];
+    }
+
+    // Crop horizontal overscan
+    BOOL isHorizontalOverscanCropped = [self.displayModeInfo[@"cropHorizontalOverscan"] boolValue];
+    if (isHorizontalOverscanCropped) {
+        [self changeDisplayWithMode:@"Crop Horizontal"];
+    }
+
+    // Crop vertical overscan
+    BOOL isVerticalOverscanCropped = [self.displayModeInfo[@"cropVerticalOverscan"] boolValue];
+    if (isVerticalOverscanCropped) {
+        [self changeDisplayWithMode:@"Crop Vertical"];
     }
 }
 
