@@ -733,20 +733,18 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     for (NSMutableDictionary *optionDict in _availableDisplayModes) {
         NSString *modeName =  optionDict[OEGameCoreDisplayModeNameKey];
         NSString *prefKey  =  optionDict[OEGameCoreDisplayModePrefKeyNameKey];
-        BOOL isToggleable  = [optionDict[OEGameCoreDisplayModeAllowsToggleKey] boolValue];
-        BOOL isSelected    = [optionDict[OEGameCoreDisplayModeStateKey] boolValue];
 
-        if (optionDict[OEGameCoreDisplayModeSeparatorItemKey] || optionDict[OEGameCoreDisplayModeLabelKey])
+        if (!modeName)
             continue;
         // Mutually exclusive option state change
-        else if ([modeName isEqualToString:displayMode] && !isToggleable)
+        else if ([modeName isEqualToString:displayMode] && !isDisplayModeToggleable)
             optionDict[OEGameCoreDisplayModeStateKey] = @YES;
         // Reset mutually exclusive options that are the same prefs group as 'displayMode'
         else if (!isDisplayModeToggleable && [prefKey isEqualToString:displayModePrefKey])
             optionDict[OEGameCoreDisplayModeStateKey] = @NO;
         // Toggleable option state change
-        else if ([modeName isEqualToString:displayMode] && isToggleable)
-            optionDict[OEGameCoreDisplayModeStateKey] = @(!isSelected);
+        else if ([modeName isEqualToString:displayMode] && isDisplayModeToggleable)
+            optionDict[OEGameCoreDisplayModeStateKey] = @(!displayModeState);
     }
 
     Nes::Api::Video video(_emu);
@@ -882,9 +880,9 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 - (void)loadDisplayModeOptions
 {
     // Restore palette
-    NSString *lastFormat = self.displayModeInfo[@"palette"];
-    if (lastFormat && ![lastFormat isEqualToString:@"15° Canonical — Nestopia"]) {
-        [self changeDisplayWithMode:lastFormat];
+    NSString *lastPalette = self.displayModeInfo[@"palette"];
+    if (lastPalette && ![lastPalette isEqualToString:@"15° Canonical — Nestopia"]) {
+        [self changeDisplayWithMode:lastPalette];
     }
 
     // Crop horizontal overscan
