@@ -66,6 +66,7 @@ namespace Nes
 			};
 
 			void Reset(bool);
+			void SetRamPowerState(uint);
 			void Boot(bool);
 			void ExecuteFrame(Sound::Output*);
 			void EndFrame();
@@ -433,6 +434,7 @@ namespace Nes
 				NES_DECL_POKE( Ram_3 );
 
 				byte mem[RAM_SIZE];
+				byte powerstate;
 			};
 
 			struct IoMap : Io::Map<SIZE_64K>
@@ -481,10 +483,12 @@ namespace Nes
 			word jammed;
 			word model;
 			Linker linker;
-			qword ticks;
+			qaword ticks;
 			Ram ram;
 			Apu apu;
 			IoMap map;
+			bool cpuOverclocking;
+			uint extraCycles;
 
 			static dword logged;
 			static void (Cpu::*const opcodes[0x100])();
@@ -495,6 +499,12 @@ namespace Nes
 			Apu& GetApu()
 			{
 				return apu;
+			}
+
+			void SetOverclocking(bool overclocking,uint newCycles)
+			{
+				cpuOverclocking = overclocking;
+				extraCycles = newCycles;
 			}
 
 			Cycle Update(uint readAddress=0)

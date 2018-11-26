@@ -186,6 +186,12 @@ namespace Nes
 			return RESULT_OK;
 		}
 
+		Result Machine::SetRamPowerState(const uint state) throw()
+		{
+			emulator.SetRamPowerState(state);
+			return RESULT_OK;
+		}
+
 		Machine::Mode Machine::GetMode() const throw()
 		{
 			return static_cast<Mode>(Is(NTSC|PAL));

@@ -289,7 +289,8 @@ namespace Nes
 
 				inline void N163::Sound::BaseChannel::SetWaveLength(const uint data)
 				{
-					const dword length = (0x20UL - (data & REG_WAVELENGTH)) << PHASE_SHIFT;
+					//const dword length = (0x20UL - (data & REG_WAVELENGTH)) << PHASE_SHIFT;
+					const dword length = (0x100UL - (data & REG_WAVELENGTH)) << PHASE_SHIFT;
 
 					if (waveLength != length)
 					{
@@ -352,7 +353,7 @@ namespace Nes
 					uint volume = GetVolume(EXT_N163) * 68U / DEFAULT_VOLUME;
 					output = IsMuted() ? 0 : volume;
 
-					rate = GetCpuClockBase() * qword(1UL << SPEED_SHIFT) / (GetSampleRate() * 45UL * GetCpuClockDivider());
+					rate = GetCpuClockBase() * qaword(1UL << SPEED_SHIFT) / (GetSampleRate() * 45UL * GetCpuClockDivider());
 
 					dcBlocker.Reset();
 

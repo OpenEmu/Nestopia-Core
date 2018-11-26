@@ -58,6 +58,20 @@ namespace Nes
 			return RESULT_NOP;
 		}
 
+		Result Video::EnableOverclocking(bool state) throw()
+		{
+			if (emulator.tracker.IsLocked( true ))
+				return RESULT_ERR_NOT_READY;
+
+			if (emulator.ppu.GetOverclockState() != state)
+			{
+				emulator.ppu.SetOverclockState( state );
+				return RESULT_OK;
+			}
+
+			return RESULT_NOP;
+		}
+
 		bool Video::AreUnlimSpritesEnabled() const throw()
 		{
 			return !emulator.ppu.HasSpriteLimit();
@@ -107,6 +121,16 @@ namespace Nes
 		{
 			return emulator.renderer.GetHue();
 		}
+		
+		bool Video::GetBlend() const throw()
+		{
+			return emulator.renderer.GetBlend() != 0;
+		}
+
+		int Video::GetCornerRounding() const throw()
+		{
+			return emulator.renderer.GetCornerRounding();
+		}
 
 		Result Video::SetBrightness(int value) throw()
 		{
@@ -151,6 +175,21 @@ namespace Nes
 		Result Video::SetHue(int value) throw()
 		{
 			return emulator.renderer.SetHue( value );
+		}
+		
+		Result Video::SetBlend(bool value) throw()
+		{
+			return emulator.renderer.SetBlend(value);
+		}
+
+		Result Video::SetCornerRounding(int value) throw()
+		{
+			return emulator.renderer.SetCornerRounding(value);
+		}
+
+		void Video::ClearFilterUpdateFlag() throw()
+		{
+			emulator.renderer.ClearFilterUpdateFlag();
 		}
 
 		void Video::EnableFieldMerging(bool state) throw()
@@ -281,13 +320,13 @@ namespace Nes
 
 		Video::Palette::Mode Video::Palette::GetMode() const throw()
 		{
-			switch (emulator.renderer.GetPaletteType())
+			if (emulator.renderer.GetPaletteType() == Core::Video::Renderer::PALETTE_YUV)
 			{
-				case Core::Video::Renderer::PALETTE_YUV:
-					return MODE_YUV;
-
-				case Core::Video::Renderer::PALETTE_CUSTOM:
-					return MODE_CUSTOM;
+				return MODE_YUV;
+			}
+			else if (emulator.renderer.GetPaletteType() == Core::Video::Renderer::PALETTE_CUSTOM)
+			{
+				return MODE_CUSTOM;
 			}
 
 			return MODE_RGB;

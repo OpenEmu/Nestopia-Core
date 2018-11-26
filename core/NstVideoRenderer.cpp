@@ -22,6 +22,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef __LIBRETRO__
+#define NST_NO_SCALEX 1
+#define NST_NO_HQ2X 1
+#define NST_NO_2XSAI 1
+#define NST_NO_XBR 1
+#endif
+
 #include <cstring>
 #include <cmath>
 #include <new>
@@ -31,8 +38,10 @@
 #include "api/NstApiVideo.hpp"
 #include "NstVideoRenderer.hpp"
 #include "NstVideoFilterNone.hpp"
-#include "NstVideoFilterNtsc.hpp"
 
+#ifndef NO_NTSC
+#include "NstVideoFilterNtsc.hpp"
+#endif
 #ifndef NST_NO_SCALEX
 #include "NstVideoFilterScaleX.hpp"
 #endif
@@ -41,6 +50,9 @@
 #endif
 #ifndef NST_NO_2XSAI
 #include "NstVideoFilter2xSaI.hpp"
+#endif
+#ifndef NST_NO_XBR
+#include "NstVideoFilterxBR.hpp"
 #endif
 
 namespace Nes
@@ -518,6 +530,7 @@ namespace Nes
 			height       (0),
 			filter       (RenderState::FILTER_NONE),
 			update       (UPDATE_PALETTE),
+			fieldMerging (0),
 			brightness   (0),
 			saturation   (0),
 			hue          (0),
@@ -527,7 +540,8 @@ namespace Nes
 			bleed        (0),
 			artifacts    (0),
 			fringing     (0),
-			fieldMerging (0)
+			blendPixels	 (1),
+			xbr_corner_rounding(0)
 			{
 				mask.r = 0;
 				mask.g = 0;
@@ -606,6 +620,7 @@ namespace Nes
 
 					#endif
 
+					#ifndef NO_NTSC
 						case RenderState::FILTER_NTSC:
 
 							if (FilterNtsc::Check( renderState ))
@@ -623,6 +638,17 @@ namespace Nes
 								);
 							}
 							break;
+					#endif
+					
+					#ifndef NST_NO_XBR
+						case RenderState::FILTER_2XBR:
+						case RenderState::FILTER_3XBR:
+						case RenderState::FILTER_4XBR:
+
+							if (FilterxBR::Check( renderState ))
+								filter = new FilterxBR( renderState, state.blendPixels, state.xbr_corner_rounding );
+							break;
+					#endif
 					}
 				}
 				catch (const std::bad_alloc&)
@@ -772,7 +798,7 @@ namespace Nes
 			{
 				NST_VERIFY( state.update );
 
-				if (state.filter == RenderState::FILTER_NTSC)
+				if (state.filter == RenderState::FILTER_NTSC || state.update == 1)
 				{
 					RenderState renderState;
 					GetState( renderState );
@@ -804,6 +830,8 @@ namespace Nes
 					if (Output::lockCallback( output ))
 					{
 						NST_VERIFY( std::labs(output.pitch) >= dword(state.width) << (filter->format.bpp / 16) );
+						
+						filter->bgColor = bgColor;
 
 						if (std::labs(output.pitch) >= dword(state.width) << (filter->format.bpp / 16))
 							filter->Blit( input, output, burstPhase );

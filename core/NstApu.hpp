@@ -67,6 +67,7 @@ namespace Nes
 			uint   GetVolume(uint) const;
 			void   Mute(bool);
 			void   SetAutoTranspose(bool);
+			void   SetGenie(bool);
 			void   EnableStereo(bool);
 
 			void SaveState(State::Saver&,dword) const;
@@ -90,6 +91,7 @@ namespace Nes
 				uint  GetCpuClockDivider() const;
 				Cycle GetCpuClock(uint=1) const;
 				bool  IsMuted() const;
+				bool  IsGenie() const;
 
 			public:
 
@@ -225,6 +227,8 @@ namespace Nes
 
 					void Reset();
 					Sample Apply(Sample);
+					void LoadState(State::Loader&);
+					void SaveState(State::Saver&,dword) const;
 
 				private:
 
@@ -434,7 +438,7 @@ namespace Nes
 				Triangle();
 
 				void Reset();
-				void UpdateSettings(uint,dword,uint,CpuModel);
+				void UpdateSettings(uint,dword,uint);
 				void LoadState(State::Loader&);
 				void SaveState(State::Saver&,dword) const;
 
@@ -525,6 +529,8 @@ namespace Nes
 
 				Dmc();
 
+				bool overclockingIsSafe;
+
 				void Reset(CpuModel);
 				void UpdateSettings(uint);
 				void LoadState(State::Loader&,const Cpu&,CpuModel,Cycle&);
@@ -599,6 +605,7 @@ namespace Nes
 				byte speed;
 				bool muted;
 				bool transpose;
+				bool genie;
 				bool stereo;
 				bool audible;
 				byte volumes[MAX_CHANNELS];
@@ -621,6 +628,16 @@ namespace Nes
 
 		public:
 
+			void SetOverclockSafety(bool safe)
+			{
+				dmc.overclockingIsSafe = safe;
+			}
+
+			bool GetOverclockSafety()
+			{
+				return dmc.overclockingIsSafe;
+			}
+
 			dword GetSampleRate() const
 			{
 				return settings.rate;
@@ -639,6 +656,11 @@ namespace Nes
 			bool IsAutoTransposing() const
 			{
 				return settings.transpose;
+			}
+
+			bool IsGenie() const
+			{
+				return settings.genie;
 			}
 
 			bool InStereo() const

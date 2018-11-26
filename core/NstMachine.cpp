@@ -3,6 +3,7 @@
 // Nestopia - NES/Famicom emulator written in C++
 //
 // Copyright (C) 2003-2008 Martin Freij
+// Copyright (C) 2018-2018 Phil Smith
 //
 // This file is part of Nestopia.
 //
@@ -25,6 +26,7 @@
 #include "NstMachine.hpp"
 #include "NstCartridge.hpp"
 #include "NstCheats.hpp"
+#include "NstHomebrew.hpp"
 #include "NstNsf.hpp"
 #include "NstImageDatabase.hpp"
 #include "input/NstInpDevice.hpp"
@@ -49,6 +51,7 @@ namespace Nes
 		expPort       (new Input::Device( cpu )),
 		image         (NULL),
 		cheats        (NULL),
+		homebrew      (NULL),
 		imageDatabase (NULL),
 		ppu           (cpu)
 		{
@@ -60,6 +63,7 @@ namespace Nes
 
 			delete imageDatabase;
 			delete cheats;
+			delete homebrew;
 			delete expPort;
 
 			for (uint ports=extPort->NumPorts(), i=0; i < ports; ++i)
@@ -104,17 +108,15 @@ namespace Nes
 
 					state |= Api::Machine::CARTRIDGE;
 
-					switch (static_cast<const Cartridge*>(image)->GetProfile().system.type)
+					if ((static_cast<const Cartridge*>(image)->GetProfile().system.type) == Api::Cartridge::Profile::System::VS_UNISYSTEM)
 					{
-						case Api::Cartridge::Profile::System::VS_UNISYSTEM:
 
-							state |= Api::Machine::VS;
-							break;
+						state |= Api::Machine::VS;
+					}
+					else if ((static_cast<const Cartridge*>(image)->GetProfile().system.type) == Api::Cartridge::Profile::System::PLAYCHOICE_10)
+					{
 
-						case Api::Cartridge::Profile::System::PLAYCHOICE_10:
-
-							state |= Api::Machine::PC10;
-							break;
+						state |= Api::Machine::PC10;
 					}
 					break;
 
@@ -126,6 +128,11 @@ namespace Nes
 				case Image::SOUND:
 
 					state |= Api::Machine::SOUND;
+					break;
+
+				case Image::UNKNOWN:
+
+					default:
 					break;
 			}
 
@@ -277,14 +284,10 @@ namespace Nes
 
 					if (image)
 					{
-						switch (image->GetDesiredSystem((state & Api::Machine::NTSC) ? REGION_NTSC : REGION_PAL))
-						{
-							case SYSTEM_FAMICOM:
-							case SYSTEM_DENDY:
+						System desiredSystem = image->GetDesiredSystem((state & Api::Machine::NTSC) ? REGION_NTSC : REGION_PAL);
 
-								acknowledged = false;
-								break;
-						}
+						if (desiredSystem == SYSTEM_FAMICOM || desiredSystem == SYSTEM_DENDY)
+							acknowledged = false;
 					}
 
 					ppu.Reset( hard, acknowledged );
@@ -294,6 +297,9 @@ namespace Nes
 
 					if (cheats)
 						cheats->Reset();
+
+					if (homebrew)
+						homebrew->Reset();
 
 					tracker.Reset();
 				}
@@ -319,6 +325,11 @@ namespace Nes
 				PowerOff();
 				throw;
 			}
+		}
+
+		void Machine::SetRamPowerState(uint state)
+		{
+			cpu.SetRamPowerState(state);
 		}
 
 		void Machine::SwitchMode()
@@ -509,6 +520,8 @@ namespace Nes
 
 				cpu.ExecuteFrame( sound );
 				ppu.EndFrame();
+
+				renderer.bgColor = ppu.output.bgColor;
 
 				if (video)
 					renderer.Blit( *video, ppu.GetScreen(), ppu.GetBurstPhase() );

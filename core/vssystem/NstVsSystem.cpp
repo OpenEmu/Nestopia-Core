@@ -1397,6 +1397,7 @@ namespace Nes
 				case TYPE_3: return new Type3;
 				case TYPE_4: return new Type4;
 				case TYPE_5: return new Type5;
+				case TYPE_NONE: default: break;
 			}
 
 			return NULL;
@@ -1471,7 +1472,7 @@ namespace Nes
 
 		NES_PEEK_A(Cartridge::VsSystem,4016)
 		{
-			return dips.Reg(0) | p4016.Peek( address ) & (STATUS_4016_MASK^0xFFU);
+			return dips.Reg(0) | (p4016.Peek( address ) & (STATUS_4016_MASK^0xFFU));
 		}
 
 		NES_POKE_AD(Cartridge::VsSystem,4016)
@@ -1481,7 +1482,7 @@ namespace Nes
 
 		NES_PEEK_A(Cartridge::VsSystem,4017)
 		{
-			return dips.Reg(1) | p4017.Peek( address ) & (STATUS_4017_MASK^0xFFU);
+			return dips.Reg(1) | (p4017.Peek( address ) & (STATUS_4017_MASK^0xFFU));
 		}
 
 		NES_POKE_AD(Cartridge::VsSystem,4017)

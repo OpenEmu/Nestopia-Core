@@ -3,6 +3,7 @@
 // Nestopia - NES/Famicom emulator written in C++
 //
 // Copyright (C) 2003-2008 Martin Freij
+// Copyright (C) 2018-2018 Phil Smith
 //
 // This file is part of Nestopia.
 //
@@ -58,6 +59,7 @@ namespace Nes
 
 		class Image;
 		class Cheats;
+		class Homebrew;
 		class ImageDatabase;
 
 		class Machine
@@ -95,6 +97,7 @@ namespace Nes
 			Result Unload();
 			Result PowerOff(Result=RESULT_OK);
 			void   Reset(bool);
+			void   SetRamPowerState(uint);
 			void   SwitchMode();
 			bool   LoadState(State::Loader&,bool);
 			void   SaveState(State::Saver&) const;
@@ -122,14 +125,14 @@ namespace Nes
 			dword frame;
 
 		public:
-
+			Cpu cpu;
 			Input::Adapter* extPort;
 			Input::Device* expPort;
 			Image* image;
 			Cheats* cheats;
+			Homebrew* homebrew;
 			ImageDatabase* imageDatabase;
 			Tracker tracker;
-			Cpu cpu;
 			Ppu ppu;
 			Video::Renderer renderer;
 

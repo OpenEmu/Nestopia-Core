@@ -117,11 +117,11 @@ namespace Nes
 					REV_C
 				};
 
-				template<uint Delay=0>
-				struct Irq : Timer::A12<BaseIrq,BaseIrq::CLOCK_FILTER,Delay>
+				template<uint Delay=0, uint ClockFilter=BaseIrq::CLOCK_FILTER>
+				struct Irq : Timer::A12<BaseIrq,ClockFilter,Delay>
 				{
 					Irq(Cpu& c,Ppu& p,bool persistant)
-					: Timer::A12<BaseIrq,BaseIrq::CLOCK_FILTER,Delay>(c,p,persistant) {}
+					: Timer::A12<BaseIrq,ClockFilter,Delay>(c,p,persistant) {}
 				};
 
 			protected:

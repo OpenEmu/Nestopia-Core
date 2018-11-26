@@ -28,6 +28,10 @@
 #include "NstCore.hpp"
 #include "NstPins.hpp"
 
+#ifndef ANDROID
+#include <wchar.h>
+#endif
+
 namespace Nes
 {
 	namespace Core

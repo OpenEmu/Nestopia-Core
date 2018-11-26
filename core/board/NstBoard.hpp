@@ -230,6 +230,8 @@ namespace Nes
 						CUSTOM_WH                  = MakeId<    1,  128,   64,  0,  0, CRM_0,  NMT_H,  0 >::ID,
 						CUSTOM_X79B                = MakeId<    3,   32,   32,  8,  0, CRM_0,  NMT_X,  0 >::ID,
 						CUSTOM_ZZ                  = MakeId<   37,  256,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
+						// Acclaim
+						ACCLAIM_MCACC              = MakeId<    4,  512,  256,  0,  0, CRM_0,  NMT_X,  1 >::ID,
 						// Active Enterprises
 						AE_STD                     = MakeId<  228, 2048,  512,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						// AGCI
@@ -353,6 +355,8 @@ namespace Nes
 						HES_STD                    = MakeId<  113,  256,  128,  0,  0, CRM_0,  NMT_H,  0 >::ID,
 						// Hosenkan
 						HOSENKAN_STD               = MakeId<  182,  512,  256,  0,  0, CRM_0,  NMT_X,  0 >::ID,
+						// Infinite NES Lives
+						INLNSF                     = MakeId<   31, 1024,    8,  0,  0, CRM_0,  NMT_X,  0 >::ID,
 						// Irem
 						IREM_G101A_0               = MakeId<   32,  256,  128,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						IREM_G101A_1               = MakeId<   32,  256,  128,  8,  0, CRM_0,  NMT_V,  0 >::ID,
@@ -431,6 +435,8 @@ namespace Nes
 						KONAMI_VRC7_0              = MakeId<   85,  512,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						KONAMI_VRC7_1              = MakeId<   85,  512,  256,  8,  0, CRM_0,  NMT_V,  0 >::ID,
 						KONAMI_VSSYSTEM            = MakeId<  151,   64,   64,  0,  0, CRM_0,  NMT_4,  0 >::ID,
+						//Magic Kid Googoo
+						MAGICKIDGOOGOO             = MakeId<  190,  256,  128,  8,  0, CRM_0,  NMT_V,  0 >::ID,
 						// Magic Series
 						MAGICSERIES_MAGICDRAGON    = MakeId<  107,  128,   64,  0,  0, CRM_0,  NMT_X,  0 >::ID,
 						// Namcot
@@ -443,6 +449,9 @@ namespace Nes
 						NAMCOT_163_1               = MakeId<   19,  512,  256,  8,  0, CRM_0,  NMT_X,  0 >::ID,
 						NAMCOT_163_S_0             = MakeId<   19,  512,  256,  0,  0, CRM_0,  NMT_X,  1 >::ID,
 						NAMCOT_163_S_1             = MakeId<   19,  512,  256,  8,  0, CRM_0,  NMT_X,  1 >::ID,
+						NAMCOT_175                 = MakeId<  210,  512,  128,  8,  0, CRM_0,  NMT_V,  0 >::ID,
+						// FIXME: Setting NMT_4 is incorrect but makes things work
+						NAMCOT_340                 = MakeId<  210,  256,  256,  0,  0, CRM_0,  NMT_4,  0 >::ID,
 						// Nitra
 						NITRA_TDA                  = MakeId<  250,  512,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						// NTDEC
@@ -513,7 +522,8 @@ namespace Nes
 						TENGEN_800004              = MakeId<  206,  128,   64,  0,  0, CRM_0,  NMT_2,  1 >::ID,
 						TENGEN_800008              = MakeId<    3,   64,   64,  0,  0, CRM_0,  NMT_X,  0 >::ID,
 						TENGEN_800030              = MakeId<  206,  128,   64,  0,  0, CRM_0,  NMT_X,  1 >::ID,
-						TENGEN_800032              = MakeId<   64,  128,  128,  0,  0, CRM_0,  NMT_V,  0 >::ID,
+						//TENGEN_800032              = MakeId<   64,  128,  128,  0,  0, CRM_0,  NMT_V,  0 >::ID,
+						TENGEN_800032              = MakeId<   64,  128,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						TENGEN_800037              = MakeId<  158,  128,  128,  0,  0, CRM_0,  NMT_Z,  0 >::ID,
 						TENGEN_800042              = MakeId<   68,  128,  256,  0,  0, CRM_0,  NMT_V,  1 >::ID,
 						// TXC
@@ -540,6 +550,7 @@ namespace Nes
 						UNL_GXROM                  = MakeId<   66,  512,  128,  8,  0, CRM_0,  NMT_X,  0 >::ID,
 						UNL_NROM                   = MakeId<    0,   32,    8,  8,  0, CRM_8,  NMT_X,  0 >::ID,
 						UNL_UXROM                  = MakeId<    2, 4096,    8,  8,  0, CRM_0,  NMT_X,  0 >::ID,
+						UNL_UXROM_M5               = MakeId<  180, 4096,    8,  8,  0, CRM_0,  NMT_X,  0 >::ID,
 						UNL_TRXROM                 = MakeId<    4,  512,  256,  8,  0, CRM_0,  NMT_4,  0 >::ID,
 						UNL_XZY                    = MakeId<  176, 1024,  256,  8,  0, CRM_0,  NMT_X,  0 >::ID,
 						// Waixing
@@ -637,7 +648,7 @@ namespace Nes
 					Context(Cpu*,Apu*,Ppu*,Ram&,Ram&,const Ram&,Type::Nmt,bool,bool,Chips&);
 
 					bool DetectBoard(wcstring,dword);
-					bool DetectBoard(byte,dword,bool);
+					bool DetectBoard(byte,dword,bool,byte);
 
 					cstring name;
 					Type type;

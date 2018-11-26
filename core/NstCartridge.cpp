@@ -118,23 +118,21 @@ namespace Nes
 
 				board->Load( savefile );
 
-				switch (profile.system.type)
+				if ((profile.system.type) == Profile::System::VS_UNISYSTEM)
 				{
-					case Profile::System::VS_UNISYSTEM:
+					vs = VsSystem::Create
+					(
+						context.cpu,
+						context.ppu,
+						static_cast<PpuModel>(profile.system.ppu),
+						prgCrc
+					);
 
-						vs = VsSystem::Create
-						(
-							context.cpu,
-							context.ppu,
-							static_cast<PpuModel>(profile.system.ppu),
-							prgCrc
-						);
-
-						profile.system.ppu = static_cast<Profile::System::Ppu>(vs->GetPpuModel());
-						break;
-
-					case Profile::System::VS_DUALSYSTEM:
-						throw RESULT_ERR_UNSUPPORTED_VSSYSTEM;
+					profile.system.ppu = static_cast<Profile::System::Ppu>(vs->GetPpuModel());
+				}
+				else if ((profile.system.type) == Profile::System::VS_DUALSYSTEM)
+				{
+					throw RESULT_ERR_UNSUPPORTED_VSSYSTEM;
 				}
 
 				if (Cartridge::QueryExternalDevice( EXT_DIP_SWITCHES ))
@@ -278,7 +276,7 @@ namespace Nes
 
 			if (profile.board.type.empty() || !b.DetectBoard( profile.board.type.c_str(), profile.board.GetWram() ))
 			{
-				if (profile.board.mapper == Profile::Board::NO_MAPPER || !b.DetectBoard( profile.board.mapper, profile.board.GetWram(), profileEx.wramAuto ) && board)
+				if (profile.board.mapper == Profile::Board::NO_MAPPER || (!b.DetectBoard( profile.board.mapper, profile.board.GetWram(), profileEx.wramAuto, profile.board.subMapper ) && board))
 					return RESULT_ERR_UNSUPPORTED_MAPPER;
 
 				if (profile.board.type.empty())
@@ -460,6 +458,13 @@ namespace Nes
 								*ppu = PPU_DENDY;
 
 							return SYSTEM_DENDY;
+
+						case Profile::System::VS_UNISYSTEM:
+						case Profile::System::VS_DUALSYSTEM:
+						case Profile::System::PLAYCHOICE_10:
+
+							default:
+							break;
 					}
 				}
 

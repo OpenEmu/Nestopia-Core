@@ -162,12 +162,13 @@ namespace Nes
 
 		Fds::Fds(Context& context)
 		:
-		Image   (DISK),
-		disks   (context.stream),
-		adapter (context.cpu,disks.sides),
-		cpu     (context.cpu),
-		ppu     (context.ppu),
-		sound   (context.apu)
+		Image         (DISK),
+		disks         (context.stream),
+		adapter       (context.cpu,disks.sides),
+		cpu           (context.cpu),
+		ppu           (context.ppu),
+		sound         (context.apu),
+		favoredSystem (context.favoredSystem)
 		{
 			if (!bios.Available())
 				throw RESULT_ERR_MISSING_BIOS;
@@ -223,7 +224,7 @@ namespace Nes
 			cpu.Map( 0x4090         ).Set( this, &Fds::Peek_4090, &Fds::Poke_Nop  );
 			cpu.Map( 0x4092         ).Set( this, &Fds::Peek_4092, &Fds::Poke_Nop  );
 
-			cpu.Map( 0x6000, 0xDFFF ).Set( &ram, &Fds::Ram::Peek_Ram, &Fds::Ram::Poke_Ram );
+			cpu.Map( 0x6000, 0xDFFF ).Set( &ram, &Ram::Peek_Ram, &Ram::Poke_Ram );
 			cpu.Map( 0xE000, 0xFFFF ).Set( &bios, &Bios::Peek_Rom, &Bios::Poke_Nop );
 		}
 
@@ -269,6 +270,16 @@ namespace Nes
 					*ppu = PPU_RP2C02;
 
 				return SYSTEM_FAMICOM;
+			}
+			else if ((region == REGION_PAL) && (favoredSystem == FAVORED_DENDY))
+			{
+				if (cpu)
+					*cpu = CPU_DENDY;
+
+				if (ppu)
+					*ppu = PPU_DENDY;
+
+				return SYSTEM_DENDY;
 			}
 			else
 			{
@@ -780,6 +791,8 @@ namespace Nes
 				count = latch;
 			else
 				ctrl &= ~uint(CTRL_ENABLED);
+			
+			latch = 0; // Fixes Kaettekita Mario Bros - FHorse/dragon2snow
 		}
 
 		NST_SINGLE_CALL bool Fds::Unit::Timer::Clock()
@@ -960,7 +973,7 @@ namespace Nes
 				count = 0;
 				status |= uint(STATUS_UNREADY);
 			}
-			else if (!(reg & CTRL_STOP | count) && io)
+			else if (!((reg & CTRL_STOP) | count) && io)
 			{
 				count = CLK_MOTOR;
 				headPos = 0;
@@ -1282,7 +1295,7 @@ namespace Nes
 					State::Loader::Data<16> data( state );
 
 					unit.drive.ctrl = data[0];
-					unit.drive.status = data[1] & (Unit::Drive::STATUS_EJECTED|Unit::Drive::STATUS_UNREADY|Unit::Drive::STATUS_PROTECTED) | OPEN_BUS;
+					unit.drive.status = (data[1] & (Unit::Drive::STATUS_EJECTED|Unit::Drive::STATUS_UNREADY|Unit::Drive::STATUS_PROTECTED)) | OPEN_BUS;
 					unit.drive.in = data[2] | (data[15] << 8 & 0x100);
 					unit.drive.out = data[3];
 					unit.drive.headPos = data[4] | data[5] << 8;
@@ -2040,7 +2053,7 @@ namespace Nes
 			if (active)
 			{
 				const dword pos = wave.pos;
-				wave.pos = (wave.pos + dword(qword(GetModulation()) * wave.frame / wave.clock) + Wave::SIZE * wave.rate) % (Wave::SIZE * wave.rate);
+				wave.pos = (wave.pos + dword(qaword(GetModulation()) * wave.frame / wave.clock) + Wave::SIZE * wave.rate) % (Wave::SIZE * wave.rate);
 
 				if (wave.pos < pos)
 					wave.volume = envelopes.units[VOLUME].Output();

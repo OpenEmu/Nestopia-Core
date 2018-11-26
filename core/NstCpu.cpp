@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include <cstring>
+#include <cstdlib>
 #include "NstCpu.hpp"
 #include "NstHook.hpp"
 #include "NstState.hpp"
@@ -166,6 +167,11 @@ namespace Nes
 			Reset( false, true );
 		}
 
+		void Cpu::SetRamPowerState(uint powerstate)
+		{
+			ram.powerstate = powerstate;
+		}
+
 		void Cpu::Reset(bool hard)
 		{
 			Reset( true, hard );
@@ -198,6 +204,8 @@ namespace Nes
 			ticks   = 0;
 			logged  = 0;
 
+			cpuOverclocking = false;
+
 			pc = RESET_VECTOR;
 
 			cycles.count  = 0;
@@ -211,10 +219,10 @@ namespace Nes
 
 			if (on)
 			{
-				map( 0x0000, 0x07FF ).Set( &ram, &Cpu::Ram::Peek_Ram_0, &Cpu::Ram::Poke_Ram_0 );
-				map( 0x0800, 0x0FFF ).Set( &ram, &Cpu::Ram::Peek_Ram_1, &Cpu::Ram::Poke_Ram_1 );
-				map( 0x1000, 0x17FF ).Set( &ram, &Cpu::Ram::Peek_Ram_2, &Cpu::Ram::Poke_Ram_2 );
-				map( 0x1800, 0x1FFF ).Set( &ram, &Cpu::Ram::Peek_Ram_3, &Cpu::Ram::Poke_Ram_3 );
+				map( 0x0000, 0x07FF ).Set( &ram, &Ram::Peek_Ram_0, &Ram::Poke_Ram_0 );
+				map( 0x0800, 0x0FFF ).Set( &ram, &Ram::Peek_Ram_1, &Ram::Poke_Ram_1 );
+				map( 0x1000, 0x17FF ).Set( &ram, &Ram::Peek_Ram_2, &Ram::Poke_Ram_2 );
+				map( 0x1800, 0x1FFF ).Set( &ram, &Ram::Peek_Ram_3, &Ram::Poke_Ram_3 );
 				map( 0x2000, 0xFFFF ).Set( this, &Cpu::Peek_Nop,        &Cpu::Poke_Nop        );
 				map( 0xFFFC         ).Set( this, &Cpu::Peek_Jam_1,      &Cpu::Poke_Nop        );
 				map( 0xFFFD         ).Set( this, &Cpu::Peek_Jam_2,      &Cpu::Poke_Nop        );
@@ -237,7 +245,10 @@ namespace Nes
 			pc = map.Peek16( RESET_VECTOR );
 
 			if (hard)
+			{
+				Poke(0x4017, 0x00);
 				cycles.count = cycles.clock[RESET_CYCLES-1];
+			}
 		}
 
 		void Cpu::SetModel(const CpuModel m)
@@ -297,9 +308,9 @@ namespace Nes
 		{
 			return
 			(
-				model == CPU_RP2A03 ? clock * qword( CPU_RP2A03_CC * CLK_NTSC_DIV ) / CLK_NTSC :
-				model == CPU_RP2A07 ? clock * qword( CPU_RP2A07_CC * CLK_PAL_DIV  ) / CLK_PAL  :
-                                      clock * qword( CPU_DENDY_CC  * CLK_PAL_DIV  ) / CLK_PAL
+				model == CPU_RP2A03 ? clock * qaword( CPU_RP2A03_CC * CLK_NTSC_DIV ) / CLK_NTSC :
+				model == CPU_RP2A07 ? clock * qaword( CPU_RP2A07_CC * CLK_PAL_DIV  ) / CLK_PAL  :
+                                      clock * qaword( CPU_DENDY_CC  * CLK_PAL_DIV  ) / CLK_PAL
 			);
 		}
 
@@ -764,18 +775,10 @@ namespace Nes
 
 		void Cpu::Ram::Reset(const CpuModel model)
 		{
-			if (model == CPU_DENDY)
-			{
-				std::memset( mem, 0x00, sizeof(mem) );
-			}
-			else
-			{
-				std::memset( mem, 0xFF, sizeof(mem) );
-
-				mem[0x08] = 0xF7;
-				mem[0x09] = 0xEF;
-				mem[0x0A] = 0xDF;
-				mem[0x0F] = 0xBF;
+			switch (powerstate) {
+				case 1: std::memset( mem, 0xFF, sizeof(mem) ); break;
+				case 2: std::memset( mem, byte(std::rand()), sizeof(mem) ); break;
+				default: std::memset( mem, 0x00, sizeof(mem) ); break;
 			}
 		}
 
@@ -1898,6 +1901,18 @@ namespace Nes
 
 			if (interrupt.irqClock != CYCLE_MAX)
 				interrupt.irqClock = (interrupt.irqClock > cycles.frame ? interrupt.irqClock - cycles.frame : 0);
+
+			if (cpuOverclocking)
+			{
+				uint startCycle = cycles.count;
+				uint lastCycle = cycles.count + extraCycles;
+				do
+				{
+					ExecuteOp();
+				}
+				while (cycles.count < extraCycles);
+				cycles.count = startCycle;
+			}
 		}
 
 		void Cpu::Clock()

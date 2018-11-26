@@ -306,7 +306,6 @@
 		82789AD50E70CFD100C01C82 /* NstVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899A90E70CFD100C01C82 /* NstVector.cpp */; };
 		82789ADB0E70CFD100C01C82 /* NstVideoFilterNone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899B20E70CFD100C01C82 /* NstVideoFilterNone.cpp */; };
 		82789ADC0E70CFD100C01C82 /* NstVideoFilterNtsc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899B40E70CFD100C01C82 /* NstVideoFilterNtsc.cpp */; };
-		82789ADD0E70CFD100C01C82 /* NstVideoFilterNtscCfg.c in Sources */ = {isa = PBXBuildFile; fileRef = 827899B60E70CFD100C01C82 /* NstVideoFilterNtscCfg.c */; };
 		82789ADF0E70CFD100C01C82 /* NstVideoRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899B90E70CFD100C01C82 /* NstVideoRenderer.cpp */; };
 		82789AE00E70CFD100C01C82 /* NstVideoScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899BB0E70CFD100C01C82 /* NstVideoScreen.cpp */; };
 		82789AE10E70CFD100C01C82 /* NstXml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899BD0E70CFD100C01C82 /* NstXml.cpp */; };
@@ -322,6 +321,15 @@
 		82789B040E70D06700C01C82 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82789AF80E70D06700C01C82 /* readme.txt */; };
 		82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82789B700E70D27D00C01C82 /* NESGameCore.mm */; };
 		82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */ = {isa = PBXBuildFile; fileRef = 82798BE50E85CC65001DCA93 /* OpenNestopia.icns */; };
+		876BE44B21AC9E1E00290705 /* NstHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */; };
+		876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */; };
+		876BE45021ACA02900290705 /* NstVideoFilterxBR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44E21ACA02800290705 /* NstVideoFilterxBR.cpp */; };
+		876BE45121ACA05A00290705 /* NstVideoFilterxBR.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44F21ACA02800290705 /* NstVideoFilterxBR.hpp */; };
+		876BE45421ACA0BA00290705 /* NstApiHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45221ACA0B900290705 /* NstApiHomebrew.cpp */; };
+		876BE45821ACA12500290705 /* NstBoardAcclaimMcAcc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45521ACA12400290705 /* NstBoardAcclaimMcAcc.cpp */; };
+		876BE45B21ACA15E00290705 /* NstBoardInlNsf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45A21ACA15E00290705 /* NstBoardInlNsf.cpp */; };
+		876BE45E21ACA18800290705 /* NstBoardMagicKidGoogoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45C21ACA18700290705 /* NstBoardMagicKidGoogoo.cpp */; };
+		876BE46121ACA1AB00290705 /* NstBoardNamcot175.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
 		947944DD18791948008259C6 /* NstVideoFilter2xSaI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 947944D418791948008259C6 /* NstVideoFilter2xSaI.cpp */; };
@@ -887,7 +895,6 @@
 		827899670E70CFCE00C01C82 /* NstChecksum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstChecksum.hpp; path = core/NstChecksum.hpp; sourceTree = "<group>"; };
 		827899680E70CFCE00C01C82 /* NstChips.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstChips.cpp; path = core/NstChips.cpp; sourceTree = "<group>"; };
 		827899690E70CFCE00C01C82 /* NstChips.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstChips.hpp; path = core/NstChips.hpp; sourceTree = "<group>"; };
-		8278996A0E70CFCF00C01C82 /* NstClock.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstClock.hpp; path = core/NstClock.hpp; sourceTree = "<group>"; };
 		8278996B0E70CFCF00C01C82 /* NstCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstCore.cpp; path = core/NstCore.cpp; sourceTree = "<group>"; };
 		8278996C0E70CFCF00C01C82 /* NstCore.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstCore.hpp; path = core/NstCore.hpp; sourceTree = "<group>"; };
 		8278996D0E70CFCF00C01C82 /* NstCpu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstCpu.cpp; path = core/NstCpu.cpp; sourceTree = "<group>"; };
@@ -956,7 +963,6 @@
 		827899B30E70CFD100C01C82 /* NstVideoFilterNone.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstVideoFilterNone.hpp; path = core/NstVideoFilterNone.hpp; sourceTree = "<group>"; };
 		827899B40E70CFD100C01C82 /* NstVideoFilterNtsc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoFilterNtsc.cpp; path = core/NstVideoFilterNtsc.cpp; sourceTree = "<group>"; };
 		827899B50E70CFD100C01C82 /* NstVideoFilterNtsc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstVideoFilterNtsc.hpp; path = core/NstVideoFilterNtsc.hpp; sourceTree = "<group>"; };
-		827899B60E70CFD100C01C82 /* NstVideoFilterNtscCfg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = NstVideoFilterNtscCfg.c; path = core/NstVideoFilterNtscCfg.c; sourceTree = "<group>"; };
 		827899B90E70CFD100C01C82 /* NstVideoRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoRenderer.cpp; path = core/NstVideoRenderer.cpp; sourceTree = "<group>"; };
 		827899BA0E70CFD100C01C82 /* NstVideoRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstVideoRenderer.hpp; path = core/NstVideoRenderer.hpp; sourceTree = "<group>"; };
 		827899BB0E70CFD100C01C82 /* NstVideoScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoScreen.cpp; path = core/NstVideoScreen.cpp; sourceTree = "<group>"; };
@@ -984,10 +990,24 @@
 		82789B6F0E70D27D00C01C82 /* NESGameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NESGameCore.h; sourceTree = "<group>"; };
 		82789B700E70D27D00C01C82 /* NESGameCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NESGameCore.mm; sourceTree = "<group>"; };
 		82798BE50E85CC65001DCA93 /* OpenNestopia.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = OpenNestopia.icns; sourceTree = "<group>"; };
-		82C5EDE50F0C4CE70019E2DC /* NstApiRam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NstApiRam.h; sourceTree = "<group>"; };
-		82C5EDE60F0C4CE70019E2DC /* NstApiRam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiRam.cpp; sourceTree = "<group>"; };
 		82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NESGameCore+NESFeatures.mm"; sourceTree = "<group>"; };
 		82F45ED70E887EAF00B7B023 /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
+		876BE44921AC9E1D00290705 /* NstHomebrew.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstHomebrew.hpp; path = core/NstHomebrew.hpp; sourceTree = "<group>"; };
+		876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstHomebrew.cpp; path = core/NstHomebrew.cpp; sourceTree = "<group>"; };
+		876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoFilterNtscCfg.cpp; path = core/NstVideoFilterNtscCfg.cpp; sourceTree = "<group>"; };
+		876BE44E21ACA02800290705 /* NstVideoFilterxBR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoFilterxBR.cpp; path = core/NstVideoFilterxBR.cpp; sourceTree = "<group>"; };
+		876BE44F21ACA02800290705 /* NstVideoFilterxBR.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstVideoFilterxBR.hpp; path = core/NstVideoFilterxBR.hpp; sourceTree = "<group>"; };
+		876BE45221ACA0B900290705 /* NstApiHomebrew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiHomebrew.cpp; sourceTree = "<group>"; };
+		876BE45321ACA0B900290705 /* NstApiHomebrew.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApiHomebrew.hpp; sourceTree = "<group>"; };
+		876BE45521ACA12400290705 /* NstBoardAcclaimMcAcc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardAcclaimMcAcc.cpp; sourceTree = "<group>"; };
+		876BE45621ACA12400290705 /* NstBoardAcclaimMcAcc.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardAcclaimMcAcc.hpp; sourceTree = "<group>"; };
+		876BE45721ACA12400290705 /* NstBoardAcclaim.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardAcclaim.hpp; sourceTree = "<group>"; };
+		876BE45921ACA15D00290705 /* NstBoardInlNsf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardInlNsf.hpp; sourceTree = "<group>"; };
+		876BE45A21ACA15E00290705 /* NstBoardInlNsf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardInlNsf.cpp; sourceTree = "<group>"; };
+		876BE45C21ACA18700290705 /* NstBoardMagicKidGoogoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardMagicKidGoogoo.cpp; sourceTree = "<group>"; };
+		876BE45D21ACA18800290705 /* NstBoardMagicKidGoogoo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardMagicKidGoogoo.hpp; sourceTree = "<group>"; };
+		876BE45F21ACA1AB00290705 /* NstBoardNamcot175.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardNamcot175.hpp; sourceTree = "<group>"; };
+		876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardNamcot175.cpp; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Nestopia.oecoreplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Nestopia.oecoreplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		942597D2151470A40074E3A3 /* OpenEmuBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenEmuBase.framework; path = ../OpenEmu/build/Release/OpenEmuBase.framework; sourceTree = "<group>"; };
@@ -1139,7 +1159,6 @@
 				827899670E70CFCE00C01C82 /* NstChecksum.hpp */,
 				827899680E70CFCE00C01C82 /* NstChips.cpp */,
 				827899690E70CFCE00C01C82 /* NstChips.hpp */,
-				8278996A0E70CFCF00C01C82 /* NstClock.hpp */,
 				8278996B0E70CFCF00C01C82 /* NstCore.cpp */,
 				8278996C0E70CFCF00C01C82 /* NstCore.hpp */,
 				8278996D0E70CFCF00C01C82 /* NstCpu.cpp */,
@@ -1152,6 +1171,8 @@
 				827899740E70CFCF00C01C82 /* NstFile.cpp */,
 				827899750E70CFCF00C01C82 /* NstFile.hpp */,
 				827899760E70CFCF00C01C82 /* NstFpuPrecision.hpp */,
+				876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */,
+				876BE44921AC9E1D00290705 /* NstHomebrew.hpp */,
 				827899770E70CFCF00C01C82 /* NstHook.hpp */,
 				827899780E70CFCF00C01C82 /* NstImage.cpp */,
 				827899790E70CFCF00C01C82 /* NstImage.hpp */,
@@ -1208,7 +1229,7 @@
 				827899B30E70CFD100C01C82 /* NstVideoFilterNone.hpp */,
 				827899B40E70CFD100C01C82 /* NstVideoFilterNtsc.cpp */,
 				827899B50E70CFD100C01C82 /* NstVideoFilterNtsc.hpp */,
-				827899B60E70CFD100C01C82 /* NstVideoFilterNtscCfg.c */,
+				876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */,
 				827899B90E70CFD100C01C82 /* NstVideoRenderer.cpp */,
 				827899BA0E70CFD100C01C82 /* NstVideoRenderer.hpp */,
 				827899BB0E70CFD100C01C82 /* NstVideoScreen.cpp */,
@@ -1227,6 +1248,8 @@
 				947944DA18791948008259C6 /* NstVideoFilterHqX.hpp */,
 				947944DB18791948008259C6 /* NstVideoFilterScaleX.cpp */,
 				947944DC18791948008259C6 /* NstVideoFilterScaleX.hpp */,
+				876BE44E21ACA02800290705 /* NstVideoFilterxBR.cpp */,
+				876BE44F21ACA02800290705 /* NstVideoFilterxBR.hpp */,
 				827899C10E70CFD100C01C82 /* vssystem */,
 			);
 			name = Core;
@@ -1249,6 +1272,8 @@
 				827897780E70CFCA00C01C82 /* NstApiEmulator.hpp */,
 				827897790E70CFCA00C01C82 /* NstApiFds.cpp */,
 				8278977A0E70CFCA00C01C82 /* NstApiFds.hpp */,
+				876BE45221ACA0B900290705 /* NstApiHomebrew.cpp */,
+				876BE45321ACA0B900290705 /* NstApiHomebrew.hpp */,
 				8278977B0E70CFCA00C01C82 /* NstApiInput.cpp */,
 				8278977C0E70CFCA00C01C82 /* NstApiInput.hpp */,
 				8278977D0E70CFCA00C01C82 /* NstApiMachine.cpp */,
@@ -1267,8 +1292,6 @@
 				8278978A0E70CFCA00C01C82 /* NstApiUser.hpp */,
 				8278978B0E70CFCA00C01C82 /* NstApiVideo.cpp */,
 				8278978C0E70CFCA00C01C82 /* NstApiVideo.hpp */,
-				82C5EDE50F0C4CE70019E2DC /* NstApiRam.h */,
-				82C5EDE60F0C4CE70019E2DC /* NstApiRam.cpp */,
 			);
 			name = api;
 			path = core/api;
@@ -1279,6 +1302,9 @@
 			children = (
 				8278978E0E70CFCA00C01C82 /* NstBoard.cpp */,
 				8278978F0E70CFCA00C01C82 /* NstBoard.hpp */,
+				876BE45721ACA12400290705 /* NstBoardAcclaim.hpp */,
+				876BE45521ACA12400290705 /* NstBoardAcclaimMcAcc.cpp */,
+				876BE45621ACA12400290705 /* NstBoardAcclaimMcAcc.hpp */,
 				827897900E70CFCA00C01C82 /* NstBoardAe.cpp */,
 				827897910E70CFCA00C01C82 /* NstBoardAe.hpp */,
 				827897920E70CFCA00C01C82 /* NstBoardAgci.cpp */,
@@ -1472,6 +1498,8 @@
 				8278984E0E70CFCC00C01C82 /* NstBoardHosenkan.cpp */,
 				8278984F0E70CFCC00C01C82 /* NstBoardHosenkan.hpp */,
 				827898500E70CFCC00C01C82 /* NstBoardHxRom.hpp */,
+				876BE45A21ACA15E00290705 /* NstBoardInlNsf.cpp */,
+				876BE45921ACA15D00290705 /* NstBoardInlNsf.hpp */,
 				827898510E70CFCC00C01C82 /* NstBoardIrem.hpp */,
 				827898520E70CFCC00C01C82 /* NstBoardIremG101.cpp */,
 				827898530E70CFCC00C01C82 /* NstBoardIremG101.hpp */,
@@ -1523,6 +1551,8 @@
 				827898810E70CFCC00C01C82 /* NstBoardKonamiVrc7.hpp */,
 				827898820E70CFCC00C01C82 /* NstBoardKonamiVsSystem.cpp */,
 				827898830E70CFCC00C01C82 /* NstBoardKonamiVsSystem.hpp */,
+				876BE45C21ACA18700290705 /* NstBoardMagicKidGoogoo.cpp */,
+				876BE45D21ACA18800290705 /* NstBoardMagicKidGoogoo.hpp */,
 				827898840E70CFCC00C01C82 /* NstBoardMagicSeries.cpp */,
 				827898850E70CFCC00C01C82 /* NstBoardMagicSeries.hpp */,
 				827898860E70CFCC00C01C82 /* NstBoardMmc1.cpp */,
@@ -1541,6 +1571,8 @@
 				827898930E70CFCC00C01C82 /* NstBoardNamcot.hpp */,
 				827898940E70CFCC00C01C82 /* NstBoardNamcot163.cpp */,
 				827898950E70CFCC00C01C82 /* NstBoardNamcot163.hpp */,
+				876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */,
+				876BE45F21ACA1AB00290705 /* NstBoardNamcot175.hpp */,
 				827898960E70CFCC00C01C82 /* NstBoardNamcot34xx.cpp */,
 				827898970E70CFCC00C01C82 /* NstBoardNamcot34xx.hpp */,
 				827898980E70CFCC00C01C82 /* NstBoardNanjing.cpp */,
@@ -2042,6 +2074,7 @@
 				82789A4B0E70CFD100C01C82 /* NstBoardKonamiVrc6.cpp in Sources */,
 				82789A4C0E70CFD100C01C82 /* NstBoardKonamiVrc7.cpp in Sources */,
 				82789A4D0E70CFD100C01C82 /* NstBoardKonamiVsSystem.cpp in Sources */,
+				876BE45821ACA12500290705 /* NstBoardAcclaimMcAcc.cpp in Sources */,
 				82789A4E0E70CFD100C01C82 /* NstBoardMagicSeries.cpp in Sources */,
 				82789A4F0E70CFD100C01C82 /* NstBoardMmc1.cpp in Sources */,
 				82789A500E70CFD100C01C82 /* NstBoardMmc2.cpp in Sources */,
@@ -2091,12 +2124,14 @@
 				82789A7B0E70CFD100C01C82 /* NstBoardTengenRambo1.cpp in Sources */,
 				82789A7C0E70CFD100C01C82 /* NstBoardTxc.cpp in Sources */,
 				82789A7D0E70CFD100C01C82 /* NstBoardTxcMxmdhtwo.cpp in Sources */,
+				876BE46121ACA1AB00290705 /* NstBoardNamcot175.cpp in Sources */,
 				82789A7E0E70CFD100C01C82 /* NstBoardTxcPoliceman.cpp in Sources */,
 				82789A7F0E70CFD100C01C82 /* NstBoardTxcTw.cpp in Sources */,
 				82789A800E70CFD100C01C82 /* NstBoardTxRom.cpp in Sources */,
 				82789A810E70CFD100C01C82 /* NstBoardUnlCc21.cpp in Sources */,
 				82789A820E70CFD100C01C82 /* NstBoardUnlEdu2000.cpp in Sources */,
 				82789A830E70CFD100C01C82 /* NstBoardUnlKingOfFighters96.cpp in Sources */,
+				876BE45E21ACA18800290705 /* NstBoardMagicKidGoogoo.cpp in Sources */,
 				82789A840E70CFD100C01C82 /* NstBoardUnlKingOfFighters97.cpp in Sources */,
 				82789A850E70CFD100C01C82 /* NstBoardUnlMortalKombat2.cpp in Sources */,
 				82789A860E70CFD100C01C82 /* NstBoardUnlSuperFighter3.cpp in Sources */,
@@ -2133,6 +2168,7 @@
 				82789AA50E70CFD100C01C82 /* NstInpPad.cpp in Sources */,
 				82789AA60E70CFD100C01C82 /* NstInpPaddle.cpp in Sources */,
 				82789AA70E70CFD100C01C82 /* NstInpPartyTap.cpp in Sources */,
+				876BE45B21ACA15E00290705 /* NstBoardInlNsf.cpp in Sources */,
 				82789AA80E70CFD100C01C82 /* NstInpPokkunMoguraa.cpp in Sources */,
 				82789AA90E70CFD100C01C82 /* NstInpPowerGlove.cpp in Sources */,
 				82789AAA0E70CFD100C01C82 /* NstInpPowerPad.cpp in Sources */,
@@ -2155,6 +2191,7 @@
 				82789ABB0E70CFD100C01C82 /* NstCrc32.cpp in Sources */,
 				82789ABC0E70CFD100C01C82 /* NstFds.cpp in Sources */,
 				82789ABD0E70CFD100C01C82 /* NstFile.cpp in Sources */,
+				876BE44B21AC9E1E00290705 /* NstHomebrew.cpp in Sources */,
 				82789ABE0E70CFD100C01C82 /* NstImage.cpp in Sources */,
 				82789ABF0E70CFD100C01C82 /* NstImageDatabase.cpp in Sources */,
 				82789AC00E70CFD100C01C82 /* NstLog.cpp in Sources */,
@@ -2172,6 +2209,7 @@
 				82789ACC0E70CFD100C01C82 /* NstSoundPcm.cpp in Sources */,
 				82789ACD0E70CFD100C01C82 /* NstSoundPlayer.cpp in Sources */,
 				82789ACE0E70CFD100C01C82 /* NstSoundRenderer.cpp in Sources */,
+				876BE45421ACA0BA00290705 /* NstApiHomebrew.cpp in Sources */,
 				82789AD00E70CFD100C01C82 /* NstState.cpp in Sources */,
 				82789AD10E70CFD100C01C82 /* NstStream.cpp in Sources */,
 				82789AD20E70CFD100C01C82 /* NstTracker.cpp in Sources */,
@@ -2180,7 +2218,9 @@
 				82789AD50E70CFD100C01C82 /* NstVector.cpp in Sources */,
 				82789ADB0E70CFD100C01C82 /* NstVideoFilterNone.cpp in Sources */,
 				82789ADC0E70CFD100C01C82 /* NstVideoFilterNtsc.cpp in Sources */,
-				82789ADD0E70CFD100C01C82 /* NstVideoFilterNtscCfg.c in Sources */,
+				876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */,
+				876BE45021ACA02900290705 /* NstVideoFilterxBR.cpp in Sources */,
+				876BE45121ACA05A00290705 /* NstVideoFilterxBR.hpp in Sources */,
 				82789ADF0E70CFD100C01C82 /* NstVideoRenderer.cpp in Sources */,
 				82789AE00E70CFD100C01C82 /* NstVideoScreen.cpp in Sources */,
 				82789AE10E70CFD100C01C82 /* NstXml.cpp in Sources */,

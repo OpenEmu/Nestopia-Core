@@ -173,6 +173,10 @@ namespace Nes
 				MAX_BRIGHTNESS                  = +100,
 				MIN_SATURATION                  = -100,
 				DEFAULT_SATURATION              =    0,
+				DEFAULT_SATURATION_COMP         =    0,             
+				DEFAULT_SATURATION_SVIDEO       =    0,
+		                DEFAULT_SATURATION_RGB          =    0,	
+		                DEFAULT_SATURATION_MONO         =  -100,
 				MAX_SATURATION                  = +100,
 				MIN_CONTRAST                    = -100,
 				DEFAULT_CONTRAST                =    0,
@@ -181,26 +185,31 @@ namespace Nes
 				DEFAULT_SHARPNESS_COMP          =    0,
 				DEFAULT_SHARPNESS_SVIDEO        =   20,
 				DEFAULT_SHARPNESS_RGB           =   20,
+				DEFAULT_SHARPNESS_MONO          =    0,
 				MAX_SHARPNESS                   = +100,
 				MIN_COLOR_RESOLUTION            = -100,
 				DEFAULT_COLOR_RESOLUTION_COMP   =    0,
 				DEFAULT_COLOR_RESOLUTION_SVIDEO =   20,
 				DEFAULT_COLOR_RESOLUTION_RGB    =   70,
+				DEFAULT_COLOR_RESOLUTION_MONO   =    0,
 				MAX_COLOR_RESOLUTION            = +100,
 				MIN_COLOR_BLEED                 = -100,
 				DEFAULT_COLOR_BLEED_COMP        =    0,
 				DEFAULT_COLOR_BLEED_SVIDEO      =    0,
 				DEFAULT_COLOR_BLEED_RGB         = -100,
+				DEFAULT_COLOR_BLEED_MONO        = 0,
 				MAX_COLOR_BLEED                 = +100,
 				MIN_COLOR_ARTIFACTS             = -100,
 				DEFAULT_COLOR_ARTIFACTS_COMP    =    0,
 				DEFAULT_COLOR_ARTIFACTS_SVIDEO  = -100,
 				DEFAULT_COLOR_ARTIFACTS_RGB     = -100,
+				DEFAULT_COLOR_ARTIFACTS_MONO    =   5,
 				MAX_COLOR_ARTIFACTS             = +100,
 				MIN_COLOR_FRINGING              = -100,
 				DEFAULT_COLOR_FRINGING_COMP     =    0,
 				DEFAULT_COLOR_FRINGING_SVIDEO   = -100,
 				DEFAULT_COLOR_FRINGING_RGB      = -100,
+				DEFAULT_COLOR_FRINGING_MONO     =   5,
 				MAX_COLOR_FRINGING              = +100,
 				MIN_HUE                         =  -45,
 				DEFAULT_HUE                     =    0,
@@ -214,6 +223,11 @@ namespace Nes
 			* @return result code
 			*/
 			Result EnableUnlimSprites(bool state) throw();
+         
+			/**
+			* Adds extra scanlines to fix lag
+			*/
+			Result EnableOverclocking(bool state) throw();
 
 			/**
 			* Checks if the PPU sprite software extension is enabled.
@@ -284,6 +298,16 @@ namespace Nes
 			* @return hue value in the range -45 to 45
 			*/
 			int GetHue() const throw();
+			
+			/**
+			* Returns whenever the xbr filters blends pixels or not
+			*/
+			bool GetBlend() const throw();
+
+			/**
+			* Returns how the xbr filters rounds corners
+			*/
+			int GetCornerRounding() const throw();
 
 			/**
 			* Sets the brightness.
@@ -356,6 +380,21 @@ namespace Nes
 			* @return result code
 			*/
 			Result SetHue(int value) throw();
+			
+			/**
+			 * Sets whenever the xbr filters is to blend pixels or not.
+			 */
+			Result SetBlend(bool value) throw();
+
+			/**
+			 * Sets whenever the xbr filters is to round corners or not.
+			 */
+			Result SetCornerRounding(int value) throw();
+
+			/**
+			 * Quickfix for blank screen issue.
+		     */
+			void ClearFilterUpdateFlag() throw();
 
 			/**
 			* Enables field merging for the NTSC filter.
@@ -682,6 +721,12 @@ namespace Nes
 					* 2xSaI filter.
 					*/
 					FILTER_2XSAI
+				#endif
+				#ifndef NST_NO_XBR
+					,
+					FILTER_2XBR,
+					FILTER_3XBR,
+					FILTER_4XBR
 				#endif
 				};
 
