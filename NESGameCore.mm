@@ -663,8 +663,24 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
             for (NSString *singleCode in multipleCodes) {
                 const char *cCode = singleCode.UTF8String;
 
-                Nes::Api::Cheats::GameGenieDecode(cCode, ggCode);
-                cheater.SetCode(ggCode);
+                if (singleCode.length == 7 && [singleCode characterAtIndex:4] == ':')
+                {
+                    ggCode.address = strtoul([singleCode substringToIndex:4].UTF8String, NULL, 16);
+                    ggCode.value = strtoul([singleCode substringFromIndex:5].UTF8String, NULL, 16);
+                    cheater.SetCode(ggCode);
+                }
+                else if (singleCode.length == 10 && [singleCode characterAtIndex:4] == '?' && [singleCode characterAtIndex:7] == ':')
+                {
+                    ggCode.address = strtoul([singleCode substringToIndex:4].UTF8String, NULL, 16);
+                    ggCode.compare = strtoul([singleCode substringWithRange:NSMakeRange(5, 2)].UTF8String, NULL, 16);
+                    ggCode.useCompare = true;
+                    ggCode.value = strtoul([singleCode substringFromIndex:8].UTF8String, NULL, 16);
+                    cheater.SetCode(ggCode);
+                }
+                else if (Nes::Api::Cheats::GameGenieDecode(cCode, ggCode) == Nes::RESULT_OK)
+                    cheater.SetCode(ggCode);
+                else if (Nes::Api::Cheats::ProActionRockyDecode(cCode, ggCode) == Nes::RESULT_OK)
+                    cheater.SetCode(ggCode);
             }
         }
     }
