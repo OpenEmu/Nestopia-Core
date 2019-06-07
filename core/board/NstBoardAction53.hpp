@@ -22,8 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef NST_BOARD_UXROM_H
-#define NST_BOARD_UXROM_H
+#ifndef NST_BOARD_ACTION_53_H
+#define NST_BOARD_ACTION_53_H
 
 #ifdef NST_PRAGMA_ONCE
 #pragma once
@@ -35,21 +35,29 @@ namespace Nes
 	{
 		namespace Boards
 		{
-			class UxRom : public Board
+			class Action53 : public Board
 			{
 			public:
 
-				explicit UxRom(const Context& c)
+			explicit Action53(const Context& c)
 				: Board(c) {}
 
 			private:
 
-				uint mirr;
-				uint hasbattery;
+				void SubSave(State::Saver&) const;
+				void SubLoad(State::Loader&,dword);
 				void SubReset(bool);
+				void set_prg(void);
+				void set_nmt_mirroring(void);
 
-				NES_DECL_POKE( 8000_D2 );
-				NES_DECL_POKE( 8000_0 );
+				NES_DECL_POKE( 5000 );
+				NES_DECL_POKE( 8000 );
+
+			protected:
+				byte preg[4];
+				byte mirroring;
+				byte index;
+
 			};
 		}
 	}
