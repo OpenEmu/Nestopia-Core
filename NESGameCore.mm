@@ -326,9 +326,9 @@ static __weak NESGameCore *_current;
 - (OEIntRect)screenRect
 {
     _videoOffsetX = _isHorzOverscanCropped ? OVERSCAN_HORIZONTAL : 0;
-    _videoOffsetY = _isVertOverscanCropped ? OVERSCAN_VERTICAL   : 0;
+    _videoOffsetY = _isVertOverscanCropped ? OVERSCAN_VERTICAL + 1 : 0; // compensate for the Danger Zone
     _videoWidth   = _isHorzOverscanCropped ? 256 - (OVERSCAN_HORIZONTAL * 2) : 256;
-    _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL   * 2) : 240;
+    _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL * 2) + (OVERSCAN_VERTICAL / 2) : 240; // display the Action Safe Area
 
     return OEIntRectMake(_videoOffsetX, _videoOffsetY, _videoWidth, _videoHeight);
 }
