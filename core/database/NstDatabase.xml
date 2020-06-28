@@ -27060,4 +27060,17 @@
             </board>
         </cartridge>
     </game>
+    <game>
+      <cartridge system="NES-NTSC" dump="unknown" crc="166C2418" sha1="FE44C70204FCE9217F194C4010CC2130A82E08A2">
+          <board type="KONAMI-VRC-4" mapper="23">
+              <prg size="256k" />
+              <chr size="128k" />
+              <wram size="8k" />
+              <chip type="Konami VRC IV">
+                  <pin number="3" function="PRG A3" />
+                  <pin number="4" function="PRG A2" />
+              </chip>
+          </board>
+      </cartridge>
+  </game>
 </database>
