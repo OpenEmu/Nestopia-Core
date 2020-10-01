@@ -1013,7 +1013,7 @@
 		876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardNamcot175.cpp; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Nestopia.oecoreplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Nestopia.oecoreplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../OpenEmu/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = "<group>"; };
+		946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../OpenEmu/SystemPlugins/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = "<group>"; };
 		947944D318791948008259C6 /* NstTimer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstTimer.hpp; path = core/NstTimer.hpp; sourceTree = "<group>"; };
 		947944D418791948008259C6 /* NstVideoFilter2xSaI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NstVideoFilter2xSaI.cpp; path = core/NstVideoFilter2xSaI.cpp; sourceTree = "<group>"; };
 		947944D518791948008259C6 /* NstVideoFilter2xSaI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NstVideoFilter2xSaI.hpp; path = core/NstVideoFilter2xSaI.hpp; sourceTree = "<group>"; };
@@ -1031,7 +1031,7 @@
 		94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlN625092.cpp; sourceTree = "<group>"; };
 		94CB655E18791A5400A19D7D /* NstBoardUnlN625092.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlN625092.hpp; sourceTree = "<group>"; };
 		C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedPreference.xib; sourceTree = "<group>"; };
-		C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OENESSystemResponderClient.h; path = ../OpenEmu/NES/OENESSystemResponderClient.h; sourceTree = "<group>"; };
+		C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OENESSystemResponderClient.h; path = ../OpenEmu/SystemPlugins/NES/OENESSystemResponderClient.h; sourceTree = "<group>"; };
 		C6D120F81711313900E868A8 /* OpenEmuBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OpenEmuBase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -1861,7 +1861,6 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 1DEB913E08733D840010E9CD /* Build configuration list for PBXProject "Nestopia" */;
@@ -2364,7 +2363,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application Support/OpenEmu/Cores\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Distribution;
 				SKIP_INSTALL = YES;
 			};
@@ -2375,7 +2373,6 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application Support/OpenEmu/Cores\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = Distribution;
 				SKIP_INSTALL = YES;
 			};
@@ -2387,7 +2384,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application Support/OpenEmu/Cores\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "Build & Install";
 				SKIP_INSTALL = YES;
 			};
@@ -2399,7 +2395,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "\"$(USER_LIBRARY_DIR)/Application Support/OpenEmu/Cores\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "Build & Install";
 				SKIP_INSTALL = YES;
 			};
