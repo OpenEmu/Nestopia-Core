@@ -297,7 +297,6 @@
 		82789ACC0E70CFD100C01C82 /* NstSoundPcm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899980E70CFD000C01C82 /* NstSoundPcm.cpp */; };
 		82789ACD0E70CFD100C01C82 /* NstSoundPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8278999A0E70CFD000C01C82 /* NstSoundPlayer.cpp */; };
 		82789ACE0E70CFD100C01C82 /* NstSoundRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8278999C0E70CFD000C01C82 /* NstSoundRenderer.cpp */; };
-		82789ACF0E70CFD100C01C82 /* NstSoundRenderer.inl in Resources */ = {isa = PBXBuildFile; fileRef = 8278999E0E70CFD100C01C82 /* NstSoundRenderer.inl */; };
 		82789AD00E70CFD100C01C82 /* NstState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8278999F0E70CFD100C01C82 /* NstState.cpp */; };
 		82789AD10E70CFD100C01C82 /* NstStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899A10E70CFD100C01C82 /* NstStream.cpp */; };
 		82789AD20E70CFD100C01C82 /* NstTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899A30E70CFD100C01C82 /* NstTracker.cpp */; };
@@ -314,13 +313,7 @@
 		82789AE40E70CFD100C01C82 /* NstVsSuperXevious.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899C40E70CFD100C01C82 /* NstVsSuperXevious.cpp */; };
 		82789AE50E70CFD100C01C82 /* NstVsSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899C60E70CFD100C01C82 /* NstVsSystem.cpp */; };
 		82789AE60E70CFD100C01C82 /* NstVsTkoBoxing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899C80E70CFD100C01C82 /* NstVsTkoBoxing.cpp */; };
-		82789AFF0E70D06700C01C82 /* changes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82789AEF0E70D06700C01C82 /* changes.txt */; };
-		82789B010E70D06700C01C82 /* license.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82789AF20E70D06700C01C82 /* license.txt */; };
-		82789B020E70D06700C01C82 /* nes_ntsc.inl in Resources */ = {isa = PBXBuildFile; fileRef = 82789AF40E70D06700C01C82 /* nes_ntsc.inl */; };
-		82789B030E70D06700C01C82 /* nes_ntsc.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82789AF50E70D06700C01C82 /* nes_ntsc.txt */; };
-		82789B040E70D06700C01C82 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 82789AF80E70D06700C01C82 /* readme.txt */; };
 		82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82789B700E70D27D00C01C82 /* NESGameCore.mm */; };
-		82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */ = {isa = PBXBuildFile; fileRef = 82798BE50E85CC65001DCA93 /* OpenNestopia.icns */; };
 		872FC2F522AAEEB600AF67DE /* NstBoardAction53.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 872FC2F322AAEEB400AF67DE /* NstBoardAction53.cpp */; };
 		876BE44B21AC9E1E00290705 /* NstHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */; };
 		876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */; };
@@ -331,9 +324,6 @@
 		876BE46121ACA1AB00290705 /* NstBoardNamcot175.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
-		947944DE18791948008259C6 /* NstVideoFilterHq2x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D618791948008259C6 /* NstVideoFilterHq2x.inl */; };
-		947944DF18791948008259C6 /* NstVideoFilterHq3x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D718791948008259C6 /* NstVideoFilterHq3x.inl */; };
-		947944E018791948008259C6 /* NstVideoFilterHq4x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D818791948008259C6 /* NstVideoFilterHq4x.inl */; };
 		94CB655F18791A5400A19D7D /* NstBoardHenggedianzi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655918791A5400A19D7D /* NstBoardHenggedianzi.cpp */; };
 		94CB656018791A5400A19D7D /* NstBoardUnlA9746.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655B18791A5400A19D7D /* NstBoardUnlA9746.cpp */; };
 		94CB656118791A5400A19D7D /* NstBoardUnlN625092.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */; };
@@ -1886,16 +1876,6 @@
 			files = (
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
 				82789A960E70CFD100C01C82 /* NstDatabase.xml in Resources */,
-				947944E018791948008259C6 /* NstVideoFilterHq4x.inl in Resources */,
-				947944DE18791948008259C6 /* NstVideoFilterHq2x.inl in Resources */,
-				82789ACF0E70CFD100C01C82 /* NstSoundRenderer.inl in Resources */,
-				82789AFF0E70D06700C01C82 /* changes.txt in Resources */,
-				82789B010E70D06700C01C82 /* license.txt in Resources */,
-				947944DF18791948008259C6 /* NstVideoFilterHq3x.inl in Resources */,
-				82789B020E70D06700C01C82 /* nes_ntsc.inl in Resources */,
-				82789B030E70D06700C01C82 /* nes_ntsc.txt in Resources */,
-				82789B040E70D06700C01C82 /* readme.txt in Resources */,
-				82798BE60E85CC65001DCA93 /* OpenNestopia.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
