@@ -324,8 +324,6 @@
 		872FC2F522AAEEB600AF67DE /* NstBoardAction53.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 872FC2F322AAEEB400AF67DE /* NstBoardAction53.cpp */; };
 		876BE44B21AC9E1E00290705 /* NstHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */; };
 		876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */; };
-		876BE45021ACA02900290705 /* NstVideoFilterxBR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44E21ACA02800290705 /* NstVideoFilterxBR.cpp */; };
-		876BE45121ACA05A00290705 /* NstVideoFilterxBR.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44F21ACA02800290705 /* NstVideoFilterxBR.hpp */; };
 		876BE45421ACA0BA00290705 /* NstApiHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45221ACA0B900290705 /* NstApiHomebrew.cpp */; };
 		876BE45821ACA12500290705 /* NstBoardAcclaimMcAcc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45521ACA12400290705 /* NstBoardAcclaimMcAcc.cpp */; };
 		876BE45B21ACA15E00290705 /* NstBoardInlNsf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE45A21ACA15E00290705 /* NstBoardInlNsf.cpp */; };
@@ -333,12 +331,9 @@
 		876BE46121ACA1AB00290705 /* NstBoardNamcot175.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
-		947944DD18791948008259C6 /* NstVideoFilter2xSaI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 947944D418791948008259C6 /* NstVideoFilter2xSaI.cpp */; };
 		947944DE18791948008259C6 /* NstVideoFilterHq2x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D618791948008259C6 /* NstVideoFilterHq2x.inl */; };
 		947944DF18791948008259C6 /* NstVideoFilterHq3x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D718791948008259C6 /* NstVideoFilterHq3x.inl */; };
 		947944E018791948008259C6 /* NstVideoFilterHq4x.inl in Resources */ = {isa = PBXBuildFile; fileRef = 947944D818791948008259C6 /* NstVideoFilterHq4x.inl */; };
-		947944E118791948008259C6 /* NstVideoFilterHqX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 947944D918791948008259C6 /* NstVideoFilterHqX.cpp */; };
-		947944E218791948008259C6 /* NstVideoFilterScaleX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 947944DB18791948008259C6 /* NstVideoFilterScaleX.cpp */; };
 		94CB655F18791A5400A19D7D /* NstBoardHenggedianzi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655918791A5400A19D7D /* NstBoardHenggedianzi.cpp */; };
 		94CB656018791A5400A19D7D /* NstBoardUnlA9746.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655B18791A5400A19D7D /* NstBoardUnlA9746.cpp */; };
 		94CB656118791A5400A19D7D /* NstBoardUnlN625092.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */; };
@@ -2008,7 +2003,6 @@
 				82789A0A0E70CFD100C01C82 /* NstBoardBmcSuper700in1.cpp in Sources */,
 				82789A0B0E70CFD100C01C82 /* NstBoardBmcSuperBig7in1.cpp in Sources */,
 				82789A0C0E70CFD100C01C82 /* NstBoardBmcSuperGun20in1.cpp in Sources */,
-				947944E218791948008259C6 /* NstVideoFilterScaleX.cpp in Sources */,
 				82789A0D0E70CFD100C01C82 /* NstBoardBmcSuperHiK300in1.cpp in Sources */,
 				82789A0E0E70CFD100C01C82 /* NstBoardBmcSuperHiK4in1.cpp in Sources */,
 				82789A0F0E70CFD100C01C82 /* NstBoardBmcSuperVision16in1.cpp in Sources */,
@@ -2032,7 +2026,6 @@
 				82789A200E70CFD100C01C82 /* NstBoardBtlSuperBros11.cpp in Sources */,
 				82789A210E70CFD100C01C82 /* NstBoardBtlT230.cpp in Sources */,
 				82789A220E70CFD100C01C82 /* NstBoardBtlTobidaseDaisakusen.cpp in Sources */,
-				947944DD18791948008259C6 /* NstVideoFilter2xSaI.cpp in Sources */,
 				82789A230E70CFD100C01C82 /* NstBoardBxRom.cpp in Sources */,
 				82789A240E70CFD100C01C82 /* NstBoardCaltron.cpp in Sources */,
 				82789A250E70CFD100C01C82 /* NstBoardCamerica.cpp in Sources */,
@@ -2145,7 +2138,6 @@
 				82789A8B0E70CFD100C01C82 /* NstBoardVsSystem.cpp in Sources */,
 				82789A8C0E70CFD100C01C82 /* NstBoardWaixing.cpp in Sources */,
 				82789A8D0E70CFD100C01C82 /* NstBoardWaixingFfv.cpp in Sources */,
-				947944E118791948008259C6 /* NstVideoFilterHqX.cpp in Sources */,
 				82789A8E0E70CFD100C01C82 /* NstBoardWaixingPs2.cpp in Sources */,
 				82789A8F0E70CFD100C01C82 /* NstBoardWaixingSecurity.cpp in Sources */,
 				82789A900E70CFD100C01C82 /* NstBoardWaixingSgz.cpp in Sources */,
@@ -2222,8 +2214,6 @@
 				82789ADB0E70CFD100C01C82 /* NstVideoFilterNone.cpp in Sources */,
 				82789ADC0E70CFD100C01C82 /* NstVideoFilterNtsc.cpp in Sources */,
 				876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */,
-				876BE45021ACA02900290705 /* NstVideoFilterxBR.cpp in Sources */,
-				876BE45121ACA05A00290705 /* NstVideoFilterxBR.hpp in Sources */,
 				82789ADF0E70CFD100C01C82 /* NstVideoRenderer.cpp in Sources */,
 				82789AE00E70CFD100C01C82 /* NstVideoScreen.cpp in Sources */,
 				82789AE10E70CFD100C01C82 /* NstXml.cpp in Sources */,
@@ -2273,6 +2263,7 @@
 					NST_NO_ZLIB,
 					NST_NO_SCALEX,
 					NST_NO_2XSAI,
+					NST_NO_XBR,
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
@@ -2295,6 +2286,7 @@
 					NST_NO_ZLIB,
 					NST_NO_SCALEX,
 					NST_NO_2XSAI,
+					NST_NO_XBR,
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
