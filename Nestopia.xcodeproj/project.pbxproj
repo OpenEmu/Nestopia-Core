@@ -2240,7 +2240,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NST_NO_HQ2X,
-					NST_NO_ZLIB,
 					NST_NO_SCALEX,
 					NST_NO_2XSAI,
 					NST_NO_XBR,
@@ -2263,7 +2262,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NST_NO_HQ2X,
-					NST_NO_ZLIB,
 					NST_NO_SCALEX,
 					NST_NO_2XSAI,
 					NST_NO_XBR,
@@ -2300,7 +2298,6 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -2325,7 +2322,6 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
