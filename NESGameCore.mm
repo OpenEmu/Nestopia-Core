@@ -185,7 +185,9 @@ static __weak NESGameCore *_current;
                 //NSLocalizedRecoverySuggestionErrorKey : errorDescription
                 }];
 
+        if (error) {
             *error = outErr;
+        }
 
         return NO;
     }
