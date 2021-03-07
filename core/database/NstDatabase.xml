@@ -7573,6 +7573,26 @@
         </cartridge>
     </game>
     <game>
+        <cartridge system="Famicom" dump="ok" crc="0889A5B1" sha1="FDE83B67AE810EFDCF233048A878BFC125FC69AE">
+            <board type="KONAMI-VRC-2" mapper="23">
+                <prg size="256k" />
+                <chr size="128k" />
+                <chip type="Konami VRC II">
+                    <pin number="3" function="PRG A1" />
+                    <pin number="4" function="PRG A0" />
+                    <pin number="21" function="CHR A10" />
+                    <pin number="22" function="CHR A16" />
+                    <pin number="23" function="CHR A11" />
+                    <pin number="24" function="CHR A13" />
+                    <pin number="25" function="CHR A14" />
+                    <pin number="26" function="CHR A12" />
+                    <pin number="27" function="CHR A15" />
+                    <pin number="28" function="NC" />
+                </chip>
+            </board>
+        </cartridge>
+    </game>
+    <game>
         <cartridge system="NES-NTSC" dump="unknown" crc="491ACB83" sha1="D17E19BB52E9C83D11D7A3362C4AAA733EFBD553">
             <board mapper="3">
                 <prg size="32k" />
