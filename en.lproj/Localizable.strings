@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  Nestopia
+
+  Created by C.W. Betts on 3/21/21.
+  
+*/
+
+"Not ready to save state." = "Not ready to save state.";
+"Invalid CRC checksum." = "Invalid CRC checksum.";
+"Out of memory." = "Out of memory.";
+"Unknown nestopia error #%d." = "Unknown nestopia error #%d.";
+"The save state file could not be opened" = "The save state file could not be opened";
+"Could not read the file state in %@." = "Could not read the file state in %@.";
+"The save state file could not be written" = "The save state file could not be written";
+"Could not write the file state in %@." = "Could not write the file state in %@.";
+"Invalid file." = "Invalid file.";
+"Corrupt file." = "Corrupt file.";
+"Unsupported mapper." = "Unsupported mapper.";
+"Can't find disksys.rom for FDS game." = "Can't find disksys.rom for FDS game.";

@@ -160,22 +160,22 @@ static __weak NESGameCore *_current;
         switch(result)
         {
             case Nes::RESULT_ERR_INVALID_FILE :
-                errorDescription = NSLocalizedString(@"Invalid file.", @"Invalid file.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Invalid file.", nil, [NSBundle bundleForClass:[self class]], @"Invalid file.");
                 break;
             case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Out of memory.", nil, [NSBundle bundleForClass:[self class]], @"Out of memory.");
                 break;
             case Nes::RESULT_ERR_CORRUPT_FILE :
-                errorDescription = NSLocalizedString(@"Corrupt file.", @"Corrupt file.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Corrupt file.", nil, [NSBundle bundleForClass:[self class]], @"Corrupt file.");
                 break;
             case Nes::RESULT_ERR_UNSUPPORTED_MAPPER :
-                errorDescription = NSLocalizedString(@"Unsupported mapper.", @"Unsupported mapper.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Unsupported mapper.", nil, [NSBundle bundleForClass:[self class]], @"Unsupported mapper.");
                 break;
             case Nes::RESULT_ERR_MISSING_BIOS :
-                errorDescription = NSLocalizedString(@"Can't find disksys.rom for FDS game.", @"Can't find disksys.rom for FDS game.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Can't find disksys.rom for FDS game.", nil, [NSBundle bundleForClass:[self class]], @"Can't find disksys.rom for FDS game.");
                 break;
             default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                errorDescription = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unknown nestopia error #%d.", nil, [NSBundle bundleForClass:[self class]], @"Unknown nestopia error #%d."), result];
                 break;
         }
 
@@ -375,8 +375,8 @@ static __weak NESGameCore *_current;
         result = machine.SaveState(stateFile, Nes::Api::Machine::NO_COMPRESSION);
     else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be written", @"Nestopia state file could not be written description."),
-            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not write the file state in %@.", @"Nestopia state file could not be written suggestion."), fileName]
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state file could not be written", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be written description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Could not write the file state in %@.", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be written suggestion."), fileName]
         }];
 
         block(NO, error);
@@ -388,13 +388,13 @@ static __weak NESGameCore *_current;
         switch(result)
         {
             case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Not ready to save state.", nil, [NSBundle bundleForClass:[self class]], @"Not ready to save state.");
                 break;
             case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Out of memory.", nil, [NSBundle bundleForClass:[self class]], @"Out of memory.");
                 break;
             default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                errorDescription = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unknown nestopia error #%d.", nil, [NSBundle bundleForClass:[self class]], @"Unknown nestopia error #%d."), result];
                 break;
         }
 
@@ -422,8 +422,8 @@ static __weak NESGameCore *_current;
         result = machine.LoadState(stateFile);
     else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
-            NSLocalizedDescriptionKey : NSLocalizedString(@"The save state file could not be opened", @"Nestopia state file could not be opened description."),
-            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedString(@"Could not read the file state in %@.", @"Nestopia state file could not be opened suggestion."), fileName]
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state file could not be opened", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be opened description."),
+            NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Could not read the file state in %@.", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be opened suggestion."), fileName]
         }];
 
         block(NO, error);
@@ -434,16 +434,16 @@ static __weak NESGameCore *_current;
         NSString *errorDescription = nil;
         switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Not ready to save state.", nil, [NSBundle bundleForClass:[self class]], @"Not ready to save state.");
                 break;
             case Nes::RESULT_ERR_INVALID_CRC :
-                errorDescription = NSLocalizedString(@"Invalid CRC checksum.", @"Invalid CRC checksum.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Invalid CRC checksum.", nil, [NSBundle bundleForClass:[self class]], @"Invalid CRC checksum.");
                 break;
             case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Out of memory.", nil, [NSBundle bundleForClass:[self class]], @"Out of memory.");
                 break;
             default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                errorDescription = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unknown nestopia error #%d.", nil, [NSBundle bundleForClass:[self class]], @"Unknown nestopia error #%d."), result];
                 break;
         }
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
@@ -474,13 +474,13 @@ static __weak NESGameCore *_current;
         NSString *errorDescription = nil;
         switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Not ready to save state.", nil, [NSBundle bundleForClass:[self class]], @"Not ready to save state.");
                 break;
             case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Out of memory.", nil, [NSBundle bundleForClass:[self class]], @"Out of memory.");
                 break;
             default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                errorDescription = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unknown nestopia error #%d.", nil, [NSBundle bundleForClass:[self class]], @"Unknown nestopia error #%d."), result];
                 break;
         }
 
@@ -521,16 +521,16 @@ static __weak NESGameCore *_current;
         NSString *errorDescription = nil;
         switch(result) {
             case Nes::RESULT_ERR_NOT_READY :
-                errorDescription = NSLocalizedString(@"Not ready to save state.", @"Not ready to save state.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Not ready to save state.", nil, [NSBundle bundleForClass:[self class]], @"Not ready to save state.");
                 break;
             case Nes::RESULT_ERR_INVALID_CRC :
-                errorDescription = NSLocalizedString(@"Invalid CRC checksum.", @"Invalid CRC checksum.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Invalid CRC checksum.", nil, [NSBundle bundleForClass:[self class]], @"Invalid CRC checksum.");
                 break;
             case Nes::RESULT_ERR_OUT_OF_MEMORY :
-                errorDescription = NSLocalizedString(@"Out of memory.", @"Out of memory.");
+                errorDescription = NSLocalizedStringFromTableInBundle(@"Out of memory.", nil, [NSBundle bundleForClass:[self class]], @"Out of memory.");
                 break;
             default :
-                errorDescription = [NSString stringWithFormat:NSLocalizedString(@"Unknown nestopia error #%d.", @"Unknown nestopia error #%d."), result];
+                errorDescription = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Unknown nestopia error #%d.", nil, [NSBundle bundleForClass:[self class]], @"Unknown nestopia error #%d."), result];
                 break;
         }
         *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{

@@ -36,6 +36,7 @@
 
 /* Begin PBXBuildFile section */
 		3D60316214DF7D0B00E9AF58 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D6030E914DF715100E9AF58 /* libz.dylib */; };
+		552ED91126081B0800846634 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 552ED91326081B0800846634 /* Localizable.strings */; };
 		827899CA0E70CFD100C01C82 /* NstApiBarcodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8278976E0E70CFC900C01C82 /* NstApiBarcodeReader.cpp */; };
 		827899CB0E70CFD100C01C82 /* NstApiCartridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827897700E70CFC900C01C82 /* NstApiCartridge.cpp */; };
 		827899CC0E70CFD100C01C82 /* NstApiCheats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827897720E70CFCA00C01C82 /* NstApiCheats.cpp */; };
@@ -374,6 +375,7 @@
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		3D6030E914DF715100E9AF58 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		552ED91226081B0800846634 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8249C9A50E89BA140027EFDF /* Menu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Menu.xib; sourceTree = "<group>"; };
 		8278976D0E70CFC900C01C82 /* NstApi.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApi.hpp; sourceTree = "<group>"; };
 		8278976E0E70CFC900C01C82 /* NstApiBarcodeReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiBarcodeReader.cpp; sourceTree = "<group>"; };
@@ -1042,14 +1044,14 @@
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				32C88E010371C26100C91783 /* Other Sources */,
 				089C167CFE841241C02AAC07 /* Resources */,
-				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
+				089C1671FE841209C02AAC07 /* Frameworks */,
 				19C28FB8FE9D52D311CA2CBB /* Products */,
 			);
 			name = Nestopia;
 			sourceTree = "<group>";
 			usesTabs = 0;
 		};
-		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
+		089C1671FE841209C02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				C6D120F81711313900E868A8 /* OpenEmuBase.framework */,
@@ -1057,7 +1059,7 @@
 				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
 				1058C7AEFEA557BF11CA2CBB /* Other Frameworks */,
 			);
-			name = "Frameworks and Libraries";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		089C167CFE841241C02AAC07 /* Resources */ = {
@@ -1069,6 +1071,7 @@
 				82F45ED70E887EAF00B7B023 /* Preferences.xib */,
 				8249C9A50E89BA140027EFDF /* Menu.xib */,
 				C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */,
+				552ED91326081B0800846634 /* Localizable.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1875,6 +1878,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
+				552ED91126081B0800846634 /* Localizable.strings in Resources */,
 				82789A960E70CFD100C01C82 /* NstDatabase.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2228,6 +2232,14 @@
 				089C167EFE841241C02AAC07 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		552ED91326081B0800846634 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				552ED91226081B0800846634 /* en */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
