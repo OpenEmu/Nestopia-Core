@@ -49,6 +49,7 @@
 #define SAMPLERATE 48000
 #define OVERSCAN_VERTICAL 8
 #define OVERSCAN_HORIZONTAL 8
+#define OVERSCAN_NES_CLASSIC_MINI 6
 
 #define OptionDefault(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @YES, }
 #define Option(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, }
@@ -74,6 +75,7 @@ static void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event,
     int16_t             *_soundBuffer;
     BOOL                 _isHorzOverscanCropped;
     BOOL                 _isVertOverscanCropped;
+    BOOL                 _isVertOverscanMiniCropped;
 
     Nes::Api::Emulator       _emu;
     Nes::Api::Sound::Output *_nesSound;
@@ -326,9 +328,17 @@ static __weak NESGameCore *_current;
 - (OEIntRect)screenRect
 {
     _videoOffsetX = _isHorzOverscanCropped ? OVERSCAN_HORIZONTAL : 0;
-    _videoOffsetY = _isVertOverscanCropped ? OVERSCAN_VERTICAL + 1 : 0; // compensate for the Danger Zone
+    _videoOffsetY = _isVertOverscanCropped ? OVERSCAN_VERTICAL   : 0;
     _videoWidth   = _isHorzOverscanCropped ? 256 - (OVERSCAN_HORIZONTAL * 2) : 256;
-    _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL * 2) + (OVERSCAN_VERTICAL / 2) : 240; // display the Action Safe Area
+    _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL   * 2) : 240;
+
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _videoOffsetX = 0;
+      _videoOffsetY = OVERSCAN_VERTICAL + 1;  // compensate for the Danger Zone
+      _videoWidth   = 256;
+      _videoHeight  = 240 - (OVERSCAN_NES_CLASSIC_MINI * 2);  // display the Action Safe Area
+    }
 
     return OEIntRectMake(_videoOffsetX, _videoOffsetY, _videoWidth, _videoHeight);
 }
@@ -342,6 +352,12 @@ static __weak NESGameCore *_current;
 {
     _aspectWidth  = _isHorzOverscanCropped ? (256 - (OVERSCAN_HORIZONTAL * 2)) * (8.0/7.0) : 256 * (8.0/7.0);
     _aspectHeight = _isVertOverscanCropped ?  240 - (OVERSCAN_VERTICAL   * 2)              : 240;
+
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _aspectWidth  = 256 * (8.0/7.0);
+      _aspectHeight = 240 - (OVERSCAN_NES_CLASSIC_MINI * 2);
+    }
 
     return OEIntSizeMake(_aspectWidth, _aspectHeight);
 }
@@ -578,6 +594,12 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     int xcoord = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
     int ycoord = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
 
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      int xcoord = aPoint.x * 0.876712;
+      int ycoord = aPoint.y + OVERSCAN_NES_CLASSIC_MINI;
+    }
+
     _controls->paddle.button = 1;
     _controls->zapper.x = xcoord;
     _controls->zapper.y = ycoord;
@@ -597,6 +619,11 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 - (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
 {
     _controls->paddle.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
+
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _controls->paddle.x = aPoint.x * 0.876712;
+    }
 }
 
 - (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
@@ -715,6 +742,7 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
           Label(@"Overscan"),
           OptionToggleable(@"Crop Horizontal", @"cropHorizontalOverscan"),
           OptionToggleable(@"Crop Vertical", @"cropVerticalOverscan"),
+          OptionToggleable(@"[Overscan Override] NES Classic Mini", @"cropVerticalOverscanMini"),
           SeparatorItem(),
           Label(@"Palette"),
           Option(@"15° Canonical — Nestopia", @"palette"),
@@ -787,6 +815,10 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     else if ([displayMode isEqualToString:@"Crop Vertical"])
     {
         _isVertOverscanCropped = !_isVertOverscanCropped;
+    }
+    else if ([displayMode isEqualToString:@"[Overscan Override] NES Classic Mini"])
+    {
+        _isVertOverscanMiniCropped = !_isVertOverscanMiniCropped;
     }
     else if ([displayMode isEqualToString:@"No Sprite Limit"])
     {
@@ -975,6 +1007,12 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     BOOL isVerticalOverscanCropped = [self.displayModeInfo[@"cropVerticalOverscan"] boolValue];
     if (isVerticalOverscanCropped) {
         [self changeDisplayWithMode:@"Crop Vertical"];
+    }
+
+    // [Overscan Override] NES Classic Mini; Crop vertical overscan
+    BOOL isVerticalOverscanMiniCropped = [self.displayModeInfo[@"cropVerticalOverscanMini"] boolValue];
+    if (isVerticalOverscanMiniCropped) {
+          [self changeDisplayWithMode:@"[Overscan Override] NES Classic Mini"];
     }
 }
 
