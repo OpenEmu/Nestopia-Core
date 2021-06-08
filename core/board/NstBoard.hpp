@@ -429,7 +429,7 @@ namespace Nes
 						KAY_PANDAPRINCE            = MakeId<  121,  256,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						// Konami
 						KONAMI_VRC1                = MakeId<   75,  128,  128,  0,  0, CRM_0,  NMT_V,  0 >::ID,
-						KONAMI_VRC2                = MakeId<   22,  128,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
+						KONAMI_VRC2                = MakeId<   22,  256,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						KONAMI_VRC3                = MakeId<   73,  128,    0,  8,  0, CRM_8,  NMT_X,  0 >::ID,
 						KONAMI_VRC4_0              = MakeId<   21,  256,  256,  0,  0, CRM_0,  NMT_V,  0 >::ID,
 						KONAMI_VRC4_1              = MakeId<   21,  256,  256,  2,  0, CRM_0,  NMT_V,  0 >::ID,

@@ -49,6 +49,7 @@
 #define SAMPLERATE 48000
 #define OVERSCAN_VERTICAL 8
 #define OVERSCAN_HORIZONTAL 8
+#define OVERSCAN_NES_CLASSIC_MINI 6
 
 #define OptionDefault(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @YES, }
 #define Option(_NAME_, _PREFKEY_) @{ OEGameCoreDisplayModeNameKey : _NAME_, OEGameCoreDisplayModePrefKeyNameKey : _PREFKEY_, OEGameCoreDisplayModeStateKey : @NO, }
@@ -69,6 +70,7 @@
     int16_t             *_soundBuffer;
     BOOL                 _isHorzOverscanCropped;
     BOOL                 _isVertOverscanCropped;
+    BOOL                 _isVertOverscanMiniCropped;
 
     Nes::Api::Emulator       _emu;
     Nes::Api::Sound::Output *_nesSound;
@@ -192,7 +194,7 @@ static __weak NESGameCore *_current;
         return NO;
     }
     machine.Power(true);
-    
+
     if (machine.Is(Nes::Api::Machine::DISK))
         fds.InsertDisk(0, 0);
 
@@ -324,6 +326,14 @@ static __weak NESGameCore *_current;
     _videoWidth   = _isHorzOverscanCropped ? 256 - (OVERSCAN_HORIZONTAL * 2) : 256;
     _videoHeight  = _isVertOverscanCropped ? 240 - (OVERSCAN_VERTICAL   * 2) : 240;
 
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _videoOffsetX = 0;
+      _videoOffsetY = OVERSCAN_VERTICAL + 1;  // compensate for the Danger Zone
+      _videoWidth   = 256;
+      _videoHeight  = 240 - (OVERSCAN_NES_CLASSIC_MINI * 2);  // display the Action Safe Area
+    }
+
     return OEIntRectMake(_videoOffsetX, _videoOffsetY, _videoWidth, _videoHeight);
 }
 
@@ -336,6 +346,12 @@ static __weak NESGameCore *_current;
 {
     _aspectWidth  = _isHorzOverscanCropped ? (256 - (OVERSCAN_HORIZONTAL * 2)) * (8.0/7.0) : 256 * (8.0/7.0);
     _aspectHeight = _isVertOverscanCropped ?  240 - (OVERSCAN_VERTICAL   * 2)              : 240;
+
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _aspectWidth  = 256 * (8.0/7.0);
+      _aspectHeight = 240 - (OVERSCAN_NES_CLASSIC_MINI * 2);
+    }
 
     return OEIntSizeMake(_aspectWidth, _aspectHeight);
 }
@@ -566,6 +582,12 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     int xcoord = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
     int ycoord = _isVertOverscanCropped ? aPoint.y + OVERSCAN_VERTICAL : aPoint.y;
 
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      int xcoord = aPoint.x * 0.876712;
+      int ycoord = aPoint.y + OVERSCAN_NES_CLASSIC_MINI;
+    }
+
     _controls->paddle.button = 1;
     _controls->zapper.x = xcoord;
     _controls->zapper.y = ycoord;
@@ -585,6 +607,11 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
 - (oneway void)mouseMovedAtPoint:(OEIntPoint)aPoint
 {
     _controls->paddle.x = _isHorzOverscanCropped ? (aPoint.x + OVERSCAN_HORIZONTAL) * 0.876712 : aPoint.x * 0.876712;
+
+    // [Overscan Override] NES Classic Mini
+    if(_isVertOverscanMiniCropped) {
+      _controls->paddle.x = aPoint.x * 0.876712;
+    }
 }
 
 - (oneway void)rightMouseDownAtPoint:(OEIntPoint)point
@@ -703,13 +730,16 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
           Label(@"Overscan"),
           OptionToggleable(@"Crop Horizontal", @"cropHorizontalOverscan"),
           OptionToggleable(@"Crop Vertical", @"cropVerticalOverscan"),
+          OptionToggleable(@"[Overscan Override] NES Classic Mini", @"cropVerticalOverscanMini"),
           SeparatorItem(),
           Label(@"Palette"),
-          OptionDefault(@"15° Canonical — Nestopia", @"palette"),
+          Option(@"15° Canonical — Nestopia", @"palette"),
           Option(@"Consumer — Nestopia", @"palette"),
           Option(@"Alternative — Nestopia", @"palette"),
           Option(@"RGB (PlayChoice-10)", @"palette"),
           Option(@"NESCAP", @"palette"),
+          OptionDefault(@"NES Classic (FBX)", @"palette"),
+          Option(@"PVM Style D93 (FBX)", @"palette"),
           Option(@"Sony CXA2025AS", @"palette"),
           Option(@"Smooth (FBX)", @"palette"),
           Option(@"Wavebeam", @"palette"),
@@ -774,6 +804,10 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     {
         _isVertOverscanCropped = !_isVertOverscanCropped;
     }
+    else if ([displayMode isEqualToString:@"[Overscan Override] NES Classic Mini"])
+    {
+        _isVertOverscanMiniCropped = !_isVertOverscanMiniCropped;
+    }
     else if ([displayMode isEqualToString:@"No Sprite Limit"])
     {
         video.EnableUnlimSprites(!displayModeState);
@@ -820,6 +854,54 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
         };
         video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
         video.GetPalette().SetCustom(nescap_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+    else if ([displayMode isEqualToString:@"NES Classic (FBX)"])
+    {
+        static const unsigned char nes_classic_fbx_fs_palette[64][3] =
+        {
+            {0x60, 0x61, 0x5F}, {0x00, 0x00, 0x83}, {0x1D, 0x01, 0x95}, {0x34, 0x08, 0x75},
+            {0x51, 0x05, 0x5E}, {0x56, 0x00, 0x0F}, {0x4C, 0x07, 0x00}, {0x37, 0x23, 0x08},
+            {0x20, 0x3A, 0x0B}, {0x0F, 0x4B, 0x0E}, {0x19, 0x4C, 0x16}, {0x02, 0x42, 0x1E},
+            {0x02, 0x31, 0x54}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xA9, 0xAA, 0xA8}, {0x10, 0x4B, 0xBF}, {0x47, 0x12, 0xD8}, {0x63, 0x00, 0xCA},
+            {0x88, 0x00, 0xA9}, {0x93, 0x0B, 0x46}, {0x8A, 0x2D, 0x04}, {0x6F, 0x52, 0x06},
+            {0x5C, 0x71, 0x14}, {0x1B, 0x8D, 0x12}, {0x19, 0x95, 0x09}, {0x17, 0x84, 0x48},
+            {0x20, 0x6B, 0x8E}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFB, 0xFB, 0xFB}, {0x66, 0x99, 0xF8}, {0x89, 0x74, 0xF9}, {0xAB, 0x58, 0xF8},
+            {0xD5, 0x57, 0xEF}, {0xDE, 0x5F, 0xA9}, {0xDC, 0x7F, 0x59}, {0xC7, 0xA2, 0x24},
+            {0xA7, 0xBE, 0x03}, {0x75, 0xD7, 0x03}, {0x60, 0xE3, 0x4F}, {0x3C, 0xD6, 0x8D},
+            {0x56, 0xC9, 0xCC}, {0x41, 0x42, 0x40}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFB, 0xFB, 0xFB}, {0xBE, 0xD4, 0xFA}, {0xC9, 0xC7, 0xF9}, {0xD7, 0xBE, 0xFA},
+            {0xE8, 0xB8, 0xF9}, {0xF5, 0xBA, 0xE5}, {0xF3, 0xCA, 0xC2}, {0xDF, 0xCD, 0xA7},
+            {0xD9, 0xE0, 0x9C}, {0xC9, 0xEB, 0x9E}, {0xC0, 0xED, 0xB8}, {0xB5, 0xF4, 0xC7},
+            {0xB9, 0xEA, 0xE9}, {0xAB, 0xAB, 0xAB}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(nes_classic_fbx_fs_palette, Nes::Api::Video::Palette::STD_PALETTE);
+    }
+    else if ([displayMode isEqualToString:@"PVM Style D93 (FBX)"])
+    {
+        static const unsigned char pvm_style_d93_fbx_palette[64][3] =
+        {
+            {0x69, 0x6B, 0x63}, {0x00, 0x17, 0x74}, {0x1E, 0x00, 0x87}, {0x34, 0x00, 0x73},
+            {0x56, 0x00, 0x57}, {0x5E, 0x00, 0x13}, {0x53, 0x1A, 0x00}, {0x3B, 0x24, 0x00},
+            {0x24, 0x30, 0x00}, {0x06, 0x3A, 0x00}, {0x00, 0x3F, 0x00}, {0x00, 0x3B, 0x1E},
+            {0x00, 0x33, 0x4E}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xB9, 0xBB, 0xB3}, {0x14, 0x53, 0xB9}, {0x4D, 0x2C, 0xDA}, {0x67, 0x1E, 0xDE},
+            {0x98, 0x18, 0x9C}, {0x9D, 0x23, 0x44}, {0xA0, 0x3E, 0x00}, {0x8D, 0x55, 0x00},
+            {0x65, 0x6D, 0x00}, {0x2C, 0x79, 0x00}, {0x00, 0x81, 0x00}, {0x00, 0x7D, 0x42},
+            {0x00, 0x78, 0x8A}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0x69, 0xA8, 0xFF}, {0x96, 0x91, 0xFF}, {0xB2, 0x8A, 0xFA},
+            {0xEA, 0x7D, 0xFA}, {0xF3, 0x7B, 0xC7}, {0xF2, 0x8E, 0x59}, {0xE6, 0xAD, 0x27},
+            {0xD7, 0xC8, 0x05}, {0x90, 0xDF, 0x07}, {0x64, 0xE5, 0x3C}, {0x45, 0xE2, 0x7D},
+            {0x48, 0xD5, 0xD9}, {0x4E, 0x50, 0x48}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
+            {0xFF, 0xFF, 0xFF}, {0xD2, 0xEA, 0xFF}, {0xE2, 0xE2, 0xFF}, {0xE9, 0xD8, 0xFF},
+            {0xF5, 0xD2, 0xFF}, {0xF8, 0xD9, 0xEA}, {0xFA, 0xDE, 0xB9}, {0xF9, 0xE8, 0x9B},
+            {0xF3, 0xF2, 0x8C}, {0xD3, 0xFA, 0x91}, {0xB8, 0xFC, 0xA8}, {0xAE, 0xFA, 0xCA},
+            {0xCA, 0xF3, 0xF3}, {0xBE, 0xC0, 0xB8}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00}
+        };
+        video.GetPalette().SetMode(Nes::Api::Video::Palette::MODE_CUSTOM);
+        video.GetPalette().SetCustom(pvm_style_d93_fbx_palette, Nes::Api::Video::Palette::STD_PALETTE);
     }
     else if ([displayMode isEqualToString:@"Sony CXA2025AS"])
     {
@@ -913,6 +995,12 @@ NSUInteger NESControlValues[] = { Nes::Api::Input::Controllers::Pad::UP, Nes::Ap
     BOOL isVerticalOverscanCropped = [self.displayModeInfo[@"cropVerticalOverscan"] boolValue];
     if (isVerticalOverscanCropped) {
         [self changeDisplayWithMode:@"Crop Vertical"];
+    }
+
+    // [Overscan Override] NES Classic Mini; Crop vertical overscan
+    BOOL isVerticalOverscanMiniCropped = [self.displayModeInfo[@"cropVerticalOverscanMini"] boolValue];
+    if (isVerticalOverscanMiniCropped) {
+          [self changeDisplayWithMode:@"[Overscan Override] NES Classic Mini"];
     }
 }
 
