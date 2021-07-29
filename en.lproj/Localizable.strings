@@ -18,3 +18,5 @@
 "Corrupt file." = "Corrupt file.";
 "Unsupported mapper." = "Unsupported mapper.";
 "Can't find disksys.rom for FDS game." = "Can't find disksys.rom for FDS game.";
+"Save state has wrong file size." = "Save state has wrong file size.";
+"The save state data could not be read" = "The save state data could not be read";

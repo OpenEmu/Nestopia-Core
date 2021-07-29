@@ -58,6 +58,11 @@
 #define Label(_NAME_) @{ OEGameCoreDisplayModeLabelKey : _NAME_, }
 #define SeparatorItem() @{ OEGameCoreDisplayModeSeparatorItemKey : @"",}
 
+static void NST_CALLBACK doFileIO(void *userData, Nes::Api::User::File &file);
+static Nes::Api::User::Answer NST_CALLBACK doQuestion(void *userData, Nes::Api::User::Question question);
+static void NST_CALLBACK doLog(void *userData, const char *text, unsigned long length);
+static void NST_CALLBACK doEvent(void *userData, Nes::Api::Machine::Event event, Nes::Result result);
+
 @interface NESGameCore () <OENESSystemResponderClient, OEFDSSystemResponderClient>
 {
     NSURL               *_romURL;
@@ -181,6 +186,7 @@ static __weak NESGameCore *_current;
 
         NSError *outErr = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadROMError userInfo:@{
                 //NSLocalizedDescriptionKey : @"Could not load ROM.",
+                NSDebugDescriptionErrorKey : @"Could not load ROM.",
                 NSLocalizedDescriptionKey : errorDescription,
                 //NSLocalizedRecoverySuggestionErrorKey : errorDescription
                 }];
@@ -376,6 +382,7 @@ static __weak NESGameCore *_current;
     else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
             NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state file could not be written", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be written description."),
+            NSDebugDescriptionErrorKey : @"The save state file could not be written",
             NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Could not write the file state in %@.", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be written suggestion."), fileName]
         }];
 
@@ -399,7 +406,8 @@ static __weak NESGameCore *_current;
         }
 
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state data could not be read", nil, [NSBundle bundleForClass:[self class]], @"The save state data could not be read"),
+            NSDebugDescriptionErrorKey : @"The save state data could not be read",
             NSLocalizedRecoverySuggestionErrorKey : errorDescription
         }];
 
@@ -423,6 +431,7 @@ static __weak NESGameCore *_current;
     else {
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotLoadStateError userInfo:@{
             NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state file could not be opened", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be opened description."),
+            NSDebugDescriptionErrorKey : @"The save state file could not be opened",
             NSLocalizedRecoverySuggestionErrorKey : [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Could not read the file state in %@.", nil, [NSBundle bundleForClass:[self class]], @"Nestopia state file could not be opened suggestion."), fileName]
         }];
 
@@ -447,7 +456,8 @@ static __weak NESGameCore *_current;
                 break;
         }
         NSError *error = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
-            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"Save state has wrong file size.", nil, [NSBundle bundleForClass:[self class]], @"Save state has wrong file size."),
+            NSDebugDescriptionErrorKey : @"Save state has wrong file size.",
             NSLocalizedRecoverySuggestionErrorKey : errorDescription,
         }];
 
@@ -485,7 +495,8 @@ static __weak NESGameCore *_current;
         }
 
         *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreCouldNotSaveStateError userInfo:@{
-            NSLocalizedDescriptionKey : @"The save state data could not be read",
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"The save state data could not be read", nil, [NSBundle bundleForClass:[self class]], @"The save state data could not be read"),
+            NSDebugDescriptionErrorKey : @"The save state data could not be read",
             NSLocalizedRecoverySuggestionErrorKey : errorDescription
         }];
 
@@ -534,7 +545,8 @@ static __weak NESGameCore *_current;
                 break;
         }
         *outError = [NSError errorWithDomain:OEGameCoreErrorDomain code:OEGameCoreStateHasWrongSizeError userInfo:@{
-            NSLocalizedDescriptionKey : @"Save state has wrong file size.",
+            NSLocalizedDescriptionKey : NSLocalizedStringFromTableInBundle(@"Save state has wrong file size.", nil, [NSBundle bundleForClass:[self class]], @"Save state has wrong file size."),
+            NSDebugDescriptionErrorKey : @"Save state has wrong file size.",
             NSLocalizedRecoverySuggestionErrorKey : errorDescription,
         }];
 
