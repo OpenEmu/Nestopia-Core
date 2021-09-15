@@ -316,6 +316,7 @@
 		82789AE60E70CFD100C01C82 /* NstVsTkoBoxing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 827899C80E70CFD100C01C82 /* NstVsTkoBoxing.cpp */; };
 		82789B710E70D27D00C01C82 /* NESGameCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 82789B700E70D27D00C01C82 /* NESGameCore.mm */; };
 		872FABE326F27032009BB457 /* NstBoardNamcot340.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 872FABE126F27032009BB457 /* NstBoardNamcot340.cpp */; };
+		872FABE626F2731D009BB457 /* NstBoardWaixingFs304.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 872FABE426F2731D009BB457 /* NstBoardWaixingFs304.cpp */; };
 		872FC2F522AAEEB600AF67DE /* NstBoardAction53.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 872FC2F322AAEEB400AF67DE /* NstBoardAction53.cpp */; };
 		876BE44B21AC9E1E00290705 /* NstHomebrew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44A21AC9E1D00290705 /* NstHomebrew.cpp */; };
 		876BE44D21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE44C21AC9F9B00290705 /* NstVideoFilterNtscCfg.cpp */; };
@@ -983,6 +984,8 @@
 		82F45ED70E887EAF00B7B023 /* Preferences.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		872FABE126F27032009BB457 /* NstBoardNamcot340.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardNamcot340.cpp; sourceTree = "<group>"; };
 		872FABE226F27032009BB457 /* NstBoardNamcot340.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardNamcot340.hpp; sourceTree = "<group>"; };
+		872FABE426F2731D009BB457 /* NstBoardWaixingFs304.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardWaixingFs304.cpp; sourceTree = "<group>"; };
+		872FABE526F2731D009BB457 /* NstBoardWaixingFs304.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardWaixingFs304.hpp; sourceTree = "<group>"; };
 		872FC2F322AAEEB400AF67DE /* NstBoardAction53.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardAction53.cpp; sourceTree = "<group>"; };
 		872FC2F422AAEEB500AF67DE /* NstBoardAction53.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardAction53.hpp; sourceTree = "<group>"; };
 		876BE44921AC9E1D00290705 /* NstHomebrew.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstHomebrew.hpp; sourceTree = "<group>"; };
@@ -1691,6 +1694,8 @@
 				8278990D0E70CFCD00C01C82 /* NstBoardWaixing.hpp */,
 				8278990E0E70CFCD00C01C82 /* NstBoardWaixingFfv.cpp */,
 				8278990F0E70CFCD00C01C82 /* NstBoardWaixingFfv.hpp */,
+				872FABE426F2731D009BB457 /* NstBoardWaixingFs304.cpp */,
+				872FABE526F2731D009BB457 /* NstBoardWaixingFs304.hpp */,
 				827899100E70CFCD00C01C82 /* NstBoardWaixingPs2.cpp */,
 				827899110E70CFCD00C01C82 /* NstBoardWaixingPs2.hpp */,
 				827899120E70CFCD00C01C82 /* NstBoardWaixingSecurity.cpp */,
@@ -2153,6 +2158,7 @@
 				82789AA80E70CFD100C01C82 /* NstInpPokkunMoguraa.cpp in Sources */,
 				82789AA90E70CFD100C01C82 /* NstInpPowerGlove.cpp in Sources */,
 				82789AAA0E70CFD100C01C82 /* NstInpPowerPad.cpp in Sources */,
+				872FABE626F2731D009BB457 /* NstBoardWaixingFs304.cpp in Sources */,
 				82789AAB0E70CFD100C01C82 /* NstInpRob.cpp in Sources */,
 				82789AAC0E70CFD100C01C82 /* NstInpSuborKeyboard.cpp in Sources */,
 				82789AAD0E70CFD100C01C82 /* NstInpTopRider.cpp in Sources */,
