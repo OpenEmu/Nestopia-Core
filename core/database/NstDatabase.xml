@@ -27000,4 +27000,15 @@
             </board>
         </cartridge>
     </game>
+    <!--game>
+        <peripherals>
+            <device type="zapper" />
+        </peripherals>
+        <cartridge system="Famicom" dump="ok" crc="A0FBF02E" sha1="38236FBD5B70F651674D52EE519AB4DBB11F7955">
+            <board type="UNL-TF1201" mapper="298">
+                <prg size="128k" />
+                <chr size="128k" />
+            </board>
+        </cartridge>
+    </game>-->
 </database>

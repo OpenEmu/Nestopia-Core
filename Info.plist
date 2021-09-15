@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.49.0.5</string>
+	<string>1.51.0</string>
 	<key>NSPrincipalClass</key>
 	<string>OEGameCoreController</string>
 	<key>OEGameCoreClass</key>
@@ -71,7 +71,7 @@
 	<key>OEGameCorePlayerCount</key>
 	<string>4</string>
 	<key>OEProjectURL</key>
-	<string>http://nestopia.sourceforge.net/</string>
+	<string>https://gitlab.com/jgemu/nestopia</string>
 	<key>OESystemIdentifiers</key>
 	<array>
 		<string>openemu.system.nes</string>
