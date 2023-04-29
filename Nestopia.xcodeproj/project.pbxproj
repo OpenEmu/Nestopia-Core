@@ -327,6 +327,9 @@
 		876BE46121ACA1AB00290705 /* NstBoardNamcot175.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D5B49B4048680CD000E48DA /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		8F28FD4A29FD3DB1008FC4A9 /* NstBoardUnl158b.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F28FD4429FD3DB0008FC4A9 /* NstBoardUnl158b.cpp */; };
+		8F28FD4B29FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F28FD4729FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp */; };
+		8F28FD4C29FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8F28FD4829FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp */; };
 		94CB655F18791A5400A19D7D /* NstBoardHenggedianzi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655918791A5400A19D7D /* NstBoardHenggedianzi.cpp */; };
 		94CB656018791A5400A19D7D /* NstBoardUnlA9746.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655B18791A5400A19D7D /* NstBoardUnlA9746.cpp */; };
 		94CB656118791A5400A19D7D /* NstBoardUnlN625092.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */; };
@@ -1006,6 +1009,12 @@
 		876BE46021ACA1AB00290705 /* NstBoardNamcot175.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardNamcot175.cpp; sourceTree = "<group>"; };
 		8D5B49B6048680CD000E48DA /* Nestopia.oecoreplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Nestopia.oecoreplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8F28FD4429FD3DB0008FC4A9 /* NstBoardUnl158b.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnl158b.cpp; sourceTree = "<group>"; };
+		8F28FD4529FD3DB0008FC4A9 /* NstBoardUnl158b.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnl158b.hpp; sourceTree = "<group>"; };
+		8F28FD4629FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlMmc3BigPrgRom.hpp; sourceTree = "<group>"; };
+		8F28FD4729FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlMmc3BigPrgRom.cpp; sourceTree = "<group>"; };
+		8F28FD4829FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlRetX7Gbl.cpp; sourceTree = "<group>"; };
+		8F28FD4929FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlRetX7Gbl.hpp; sourceTree = "<group>"; };
 		946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../OpenEmu/SystemPlugins/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = "<group>"; };
 		947944D318791948008259C6 /* NstTimer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstTimer.hpp; sourceTree = "<group>"; };
 		947944D418791948008259C6 /* NstVideoFilter2xSaI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstVideoFilter2xSaI.cpp; sourceTree = "<group>"; };
@@ -1668,6 +1677,8 @@
 				827898F30E70CFCD00C01C82 /* NstBoardTxcTw.hpp */,
 				827898F40E70CFCD00C01C82 /* NstBoardTxRom.cpp */,
 				827898F50E70CFCD00C01C82 /* NstBoardTxRom.hpp */,
+				8F28FD4429FD3DB0008FC4A9 /* NstBoardUnl158b.cpp */,
+				8F28FD4529FD3DB0008FC4A9 /* NstBoardUnl158b.hpp */,
 				827898F60E70CFCD00C01C82 /* NstBoardUnlCc21.cpp */,
 				827898F70E70CFCD00C01C82 /* NstBoardUnlCc21.hpp */,
 				827898F80E70CFCD00C01C82 /* NstBoardUnlEdu2000.cpp */,
@@ -1676,8 +1687,12 @@
 				827898FB0E70CFCD00C01C82 /* NstBoardUnlKingOfFighters96.hpp */,
 				827898FC0E70CFCD00C01C82 /* NstBoardUnlKingOfFighters97.cpp */,
 				827898FD0E70CFCD00C01C82 /* NstBoardUnlKingOfFighters97.hpp */,
+				8F28FD4729FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp */,
+				8F28FD4629FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.hpp */,
 				827898FE0E70CFCD00C01C82 /* NstBoardUnlMortalKombat2.cpp */,
 				827898FF0E70CFCD00C01C82 /* NstBoardUnlMortalKombat2.hpp */,
+				8F28FD4829FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp */,
+				8F28FD4929FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.hpp */,
 				827899000E70CFCD00C01C82 /* NstBoardUnlSuperFighter3.cpp */,
 				827899010E70CFCD00C01C82 /* NstBoardUnlSuperFighter3.hpp */,
 				827899020E70CFCD00C01C82 /* NstBoardUnlTf1201.cpp */,
@@ -1978,6 +1993,7 @@
 				827899FA0E70CFD100C01C82 /* NstBoardBmcCtc65.cpp in Sources */,
 				827899FB0E70CFD100C01C82 /* NstBoardBmcFamily4646B.cpp in Sources */,
 				827899FC0E70CFD100C01C82 /* NstBoardBmcFk23c.cpp in Sources */,
+				8F28FD4A29FD3DB1008FC4A9 /* NstBoardUnl158b.cpp in Sources */,
 				827899FD0E70CFD100C01C82 /* NstBoardBmcGamestarA.cpp in Sources */,
 				827899FE0E70CFD100C01C82 /* NstBoardBmcGamestarB.cpp in Sources */,
 				827899FF0E70CFD100C01C82 /* NstBoardBmcGolden190in1.cpp in Sources */,
@@ -2134,6 +2150,7 @@
 				82789A900E70CFD100C01C82 /* NstBoardWaixingSgz.cpp in Sources */,
 				82789A910E70CFD100C01C82 /* NstBoardWaixingSgzlz.cpp in Sources */,
 				82789A920E70CFD100C01C82 /* NstBoardWaixingSh2.cpp in Sources */,
+				8F28FD4B29FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp in Sources */,
 				82789A930E70CFD100C01C82 /* NstBoardWaixingZs.cpp in Sources */,
 				82789A940E70CFD100C01C82 /* NstBoardWhirlwind.cpp in Sources */,
 				82789A950E70CFD100C01C82 /* NstBoardZz.cpp in Sources */,
@@ -2209,6 +2226,7 @@
 				82789ADF0E70CFD100C01C82 /* NstVideoRenderer.cpp in Sources */,
 				82789AE00E70CFD100C01C82 /* NstVideoScreen.cpp in Sources */,
 				82789AE10E70CFD100C01C82 /* NstXml.cpp in Sources */,
+				8F28FD4C29FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp in Sources */,
 				82789AE20E70CFD100C01C82 /* NstZlib.cpp in Sources */,
 				82789AE30E70CFD100C01C82 /* NstVsRbiBaseball.cpp in Sources */,
 				82789AE40E70CFD100C01C82 /* NstVsSuperXevious.cpp in Sources */,

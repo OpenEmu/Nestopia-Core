@@ -249,7 +249,6 @@ static __weak NESGameCore *_current;
 
     // Setup Audio
     Nes::Api::Sound sound(_emu);
-    sound.SetSampleBits(16);
     sound.SetSampleRate(SAMPLERATE);
     sound.SetVolume(Nes::Api::Sound::ALL_CHANNELS, 100);
     sound.SetSpeaker(Nes::Api::Sound::SPEAKER_MONO);
