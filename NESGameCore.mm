@@ -257,7 +257,7 @@ static __weak NESGameCore *_current;
     _bufFrameSize = (SAMPLERATE / self.frameInterval);
 
     _soundBuffer = new int16_t[_bufFrameSize * self.channelCount];
-    [[self ringBufferAtIndex:0] setLength:(sizeof(int16_t) * _bufFrameSize * self.channelCount * 5)];
+    //[[self ringBufferAtIndex:0] setLength:(sizeof(int16_t) * _bufFrameSize * self.channelCount * 5)];
 
     memset(_soundBuffer, 0, _bufFrameSize * self.channelCount * sizeof(int16_t));
     _nesSound->samples[0] = _soundBuffer;
@@ -270,7 +270,7 @@ static __weak NESGameCore *_current;
 {
     _emu.Execute(_nesVideo, _nesSound, _controls);
 
-    [[self ringBufferAtIndex:0] write:_soundBuffer maxLength:self.channelCount * _bufFrameSize * sizeof(int16_t)];
+    [[self audioBufferAtIndex:0] write:_soundBuffer maxLength:self.channelCount * _bufFrameSize * sizeof(int16_t)];
 }
 
 - (void)resetEmulation
