@@ -1015,7 +1015,6 @@
 		8F28FD4729FD3DB1008FC4A9 /* NstBoardUnlMmc3BigPrgRom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlMmc3BigPrgRom.cpp; sourceTree = "<group>"; };
 		8F28FD4829FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlRetX7Gbl.cpp; sourceTree = "<group>"; };
 		8F28FD4929FD3DB1008FC4A9 /* NstBoardUnlRetX7Gbl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlRetX7Gbl.hpp; sourceTree = "<group>"; };
-		946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../OpenEmu/SystemPlugins/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = "<group>"; };
 		947944D318791948008259C6 /* NstTimer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstTimer.hpp; sourceTree = "<group>"; };
 		947944D418791948008259C6 /* NstVideoFilter2xSaI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstVideoFilter2xSaI.cpp; sourceTree = "<group>"; };
 		947944D518791948008259C6 /* NstVideoFilter2xSaI.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstVideoFilter2xSaI.hpp; sourceTree = "<group>"; };
@@ -1033,9 +1032,10 @@
 		94CB655D18791A5400A19D7D /* NstBoardUnlN625092.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstBoardUnlN625092.cpp; sourceTree = "<group>"; };
 		94CB655E18791A5400A19D7D /* NstBoardUnlN625092.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstBoardUnlN625092.hpp; sourceTree = "<group>"; };
 		C6296C610FCEEE45004F84C4 /* AdvancedPreference.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdvancedPreference.xib; sourceTree = "<group>"; };
-		C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OENESSystemResponderClient.h; path = ../OpenEmu/SystemPlugins/NES/OENESSystemResponderClient.h; sourceTree = "<group>"; };
 		C6D120F81711313900E868A8 /* OpenEmuBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OpenEmuBase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E65807B2D6F200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		DB0B09012E9854F5007A0109 /* OENESSystemResponderClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OENESSystemResponderClient.h; path = ../../OpenEmu/SystemPlugins/NES/OENESSystemResponderClient.h; sourceTree = SOURCE_ROOT; };
+		DB0B09022E9854FD007A0109 /* OEFDSSystemResponderClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OEFDSSystemResponderClient.h; path = "../../OpenEmu/SystemPlugins/Nintendo FDS/OEFDSSystemResponderClient.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1097,8 +1097,8 @@
 				82789B6F0E70D27D00C01C82 /* NESGameCore.h */,
 				82789B700E70D27D00C01C82 /* NESGameCore.mm */,
 				82F3642E0F51FB4A001495F6 /* NESGameCore+NESFeatures.mm */,
-				C6B3E692136525EB00D34947 /* OENESSystemResponderClient.h */,
-				946C18A91714895200C64BF9 /* OEFDSSystemResponderClient.h */,
+				DB0B09012E9854F5007A0109 /* OENESSystemResponderClient.h */,
+				DB0B09022E9854FD007A0109 /* OEFDSSystemResponderClient.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
