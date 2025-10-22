@@ -307,8 +307,8 @@ namespace Nes
 
 				const byte d[2] =
 				{
-					data >> 0 & 0xFF,
-					data >> 8 & 0xFF
+                    static_cast<byte>(data >> 0 & 0xFF),
+                    static_cast<byte>(data >> 8 & 0xFF)
 				};
 
 				Write( d, 2 );
@@ -320,10 +320,10 @@ namespace Nes
 
 				const byte d[4] =
 				{
-					data >>  0 & 0xFF,
-					data >>  8 & 0xFF,
-					data >> 16 & 0xFF,
-					data >> 24 & 0xFF
+                    static_cast<byte>(data >>  0 & 0xFF),
+                    static_cast<byte>(data >>  8 & 0xFF),
+                    static_cast<byte>(data >> 16 & 0xFF),
+                    static_cast<byte>(data >> 24 & 0xFF)
 				};
 
 				Write( d, 4 );
@@ -333,14 +333,14 @@ namespace Nes
 			{
 				const byte d[8] =
 				{
-					data >>  0 & 0xFF,
-					data >>  8 & 0xFF,
-					data >> 16 & 0xFF,
-					data >> 24 & 0xFF,
-					data >> 32 & 0xFF,
-					data >> 40 & 0xFF,
-					data >> 48 & 0xFF,
-					data >> 56 & 0xFF
+                    static_cast<byte>(data >>  0 & 0xFF),
+                    static_cast<byte>(data >>  8 & 0xFF),
+                    static_cast<byte>(data >> 16 & 0xFF),
+                    static_cast<byte>(data >> 24 & 0xFF),
+                    static_cast<byte>(data >> 32 & 0xFF),
+                    static_cast<byte>(data >> 40 & 0xFF),
+                    static_cast<byte>(data >> 48 & 0xFF),
+                    static_cast<byte>(data >> 56 & 0xFF)
 				};
 
 				Write( d, 8 );

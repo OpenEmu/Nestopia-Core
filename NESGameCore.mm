@@ -499,7 +499,7 @@ static __weak NESGameCore *_current;
             NSLocalizedRecoverySuggestionErrorKey : errorDescription
         }];
 
-        return NO;
+        return nil;
     }
 
     stateStream.seekg(0, std::ios::end);
