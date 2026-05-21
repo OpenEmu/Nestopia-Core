@@ -2288,7 +2288,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.openemu.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = Nestopia;
 				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = "-Wno-switch-enum";
+				WARNING_CFLAGS = (
+					"-Wno-switch-enum",
+					"-Wno-c++11-narrowing",
+				);
 				WRAPPER_EXTENSION = oecoreplugin;
 			};
 			name = Debug;
@@ -2310,7 +2313,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.openemu.${PRODUCT_NAME:identifier}";
 				PRODUCT_NAME = Nestopia;
 				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = "-Wno-switch-enum";
+				WARNING_CFLAGS = (
+					"-Wno-switch-enum",
+					"-Wno-c++11-narrowing",
+				);
 				WRAPPER_EXTENSION = oecoreplugin;
 			};
 			name = Release;
